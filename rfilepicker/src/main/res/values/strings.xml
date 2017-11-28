@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">RFilePicker</string>
+    <string name="rp_select_default_txt">已选0B</string>
+    <string name="rp_select_txt">已选%sB</string>
+    <string name="rp_ok_default_txt">确定(0)</string>
+    <string name="rp_ok_txt">确定(%s)</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

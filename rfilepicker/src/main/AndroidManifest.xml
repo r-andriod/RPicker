@@ -1,2 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.upup8.rfilepicker" />
+    package="com.upup8.rfilepicker">
+
+    <application>
+        <activity android:name=".RPickerActivity"></activity>
+    </application>
+
+</manifest>
