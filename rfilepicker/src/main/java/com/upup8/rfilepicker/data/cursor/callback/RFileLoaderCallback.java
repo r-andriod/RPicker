@@ -143,15 +143,12 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
                         fileDirInfo.setFileName(fileDirName);
                         fileDirInfo.setFilePath(imagePath);
                         fileDirInfo.setFileType(FileEntity.FileType.IMAGE);
-                        fileDirInfo.setFileSize(0);
+                        fileDirInfo.setFileSize(1);
                         tempDirIdArray.put(fileDirId, fileDirInfo);
-                        // add
-                        fileEntityList.add(fileDirInfo);
                     } else {
                         //更新数量
                         tempDirIdArray.get(fileDirId).setFileSize(tempDirIdArray.get(fileDirId).getFileSize() + 1);
                     }
-
 
                     // file
                     FileEntity fileInfo = new FileEntity();
@@ -164,8 +161,7 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
                     fileInfo.setFileModifiedTime(time);
                     tempArray.put(imageId, fileInfo);
                     inImageIds.append(imageId).append(",");
-                    // add
-                    fileEntityList.add(fileInfo);
+
 
                 }
             }
@@ -185,16 +181,28 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
                 String thumbnailPath = data.getString(data.getColumnIndexOrThrow(Media.DATA));
                 FileEntity fileThumbnailEntity = tempArray.get(imageId);
                 if (fileThumbnailEntity != null) {
-                    if (fileEntityList.contains(fileThumbnailEntity)) {
-                        fileEntityList.get(fileEntityList.indexOf(fileThumbnailEntity)).setThumbnail(true);
-                        fileEntityList.get(fileEntityList.indexOf(fileThumbnailEntity)).setFileThumbnail(thumbnailPath);
-                        //fileThumbnailEntity.setThumbnail(true);
-                        //fileThumbnailEntity.setFileThumbnail(thumbnailPath);
-                        //fileThumbnailEntity
-                    }
+                    //if (fileEntityList.contains(fileThumbnailEntity)) {
+                    //    fileEntityList.get(fileEntityList.indexOf(fileThumbnailEntity)).setThumbnail(true);
+                    //    fileEntityList.get(fileEntityList.indexOf(fileThumbnailEntity)).setFileThumbnail(thumbnailPath);
+                    fileThumbnailEntity.setThumbnail(true);
+                    fileThumbnailEntity.setFileThumbnail(thumbnailPath);
+                    //}
                 }
             } while (data.moveToNext());
         }
+
+
+        /** 处理 SparseArray */
+        for (int i = 0; i < tempDirIdArray.size(); i++) {
+            fileEntityList.add(tempDirIdArray.get(tempDirIdArray.keyAt(i)));
+            for (int j = 0; j < tempArray.size(); j++) {
+                if (tempDirIdArray.keyAt(i) == tempArray.get(tempArray.keyAt(j)).getDirId()) {
+                    fileEntityList.add(tempArray.get(tempArray.keyAt(j)));
+                }
+            }
+        }
+
+
         /**
          * 返回 list
          */

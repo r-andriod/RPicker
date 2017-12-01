@@ -184,4 +184,20 @@ public class FileEntity implements Serializable, Parcelable {
             return new FileEntity[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "FileEntity{" +
+                "fileId=" + fileId +
+                ", dirId=" + dirId +
+                ", fileName='" + fileName + '\'' +
+                ", filePath='" + filePath + '\'' +
+                ", fileType='" + fileType + '\'' +
+                ", fileSize=" + fileSize +
+                ", fileThumbnail='" + fileThumbnail + '\'' +
+                ", fileModifiedTime=" + fileModifiedTime +
+                ", isThumbnail=" + isThumbnail +
+                ", isSelect=" + isSelect +
+                '}';
+    }
 }

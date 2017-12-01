@@ -87,7 +87,8 @@ public class DocumentFragment extends Fragment {
                 RFilePickerItemDecorator.VERTICAL_LIST,
                 new RFilePickerItemDecorator.RFIlePickerDecorationCallback() {
                     @Override
-                    public boolean getIsGroupHeadeByPos(int position) {
+                    public boolean getIsGroupHeadByPos(int position) {
+                        //Log.d("getIsGroupHeadByPos", "getIsGroupHeadByPos: " + files.get(position).toString());
                         if ((files.get(position).getFileId() == 0)) {
                             return true;
                         }

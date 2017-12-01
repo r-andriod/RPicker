@@ -93,14 +93,14 @@ public class RFilePickerItemDecorator extends ItemDecoration {
      */
     public void drawHorizontalLine(Canvas c, RecyclerView parent, RecyclerView.State state) {
         super.onDraw(c, parent, state);
-        final int leftWithMargin = (int) convertDpToPixel(67);
+        final int leftWithMargin = (int) convertDpToPixel(mContext, 70);
         final int right = parent.getWidth();
 
         final int childCount = parent.getChildCount();
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
             int adapterPosition = parent.getChildAdapterPosition(child);
-            int left = (adapterPosition == 0 || isFirstInGroup(i)) ? 0 : leftWithMargin;
+            int left = (adapterPosition == 0 || isFirstInGroup(adapterPosition)) ? 0 : leftWithMargin;
             //parent.getDecoratedBoundsWithMargins(child, mBounds);
             //final int bottom = mBounds.bottom + Math.round(ViewCompat.getTranslationY(child));
             //final int top = child.getBottom() + params.bottomMargin;
@@ -139,9 +139,21 @@ public class RFilePickerItemDecorator extends ItemDecoration {
         super.getItemOffsets(outRect, view, parent, state);
     }
 
-    public float convertDpToPixel(float dp) {
-        DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
+    public float convertDpToPixel(Context context, float dp) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         float px = dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return px;
+    }
+
+    public int convertPxToDp(Context context, int px) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int dp = Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return dp;
+    }
+
+    public int convertDpToPx(Context context, int dp) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
         return px;
     }
 
@@ -150,12 +162,12 @@ public class RFilePickerItemDecorator extends ItemDecoration {
         if (pos == 0) {
             return true;
         } else {
-            return callback.getIsGroupHeadeByPos(pos);
+            return callback.getIsGroupHeadByPos(pos);
         }
     }
 
 
     public interface RFIlePickerDecorationCallback {
-        boolean getIsGroupHeadeByPos(int position);
+        boolean getIsGroupHeadByPos(int position);
     }
 }
