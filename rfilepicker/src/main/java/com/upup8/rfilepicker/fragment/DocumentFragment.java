@@ -17,6 +17,7 @@ import com.upup8.rfilepicker.data.cursor.MediaDataHelper;
 import com.upup8.rfilepicker.data.cursor.callback.IFileResultCallback;
 import com.upup8.rfilepicker.databinding.RpickerFragmentDocumentBinding;
 import com.upup8.rfilepicker.model.FileEntity;
+import com.upup8.rfilepicker.view.RFilePickerItemDecorator;
 
 import java.util.List;
 
@@ -79,8 +80,20 @@ public class DocumentFragment extends Fragment {
                 });
     }
 
-    private void initList(List<FileEntity> files) {
+    private void initList(final List<FileEntity> files) {
         binding.rpRcPhoto.setLayoutManager(new LinearLayoutManager(getContext()));
+        //binding.rpRcPhoto.addItemDecoration(new DividerItemDecoration(getContext(), VERTICAL));
+        binding.rpRcPhoto.addItemDecoration(new RFilePickerItemDecorator(getContext(),
+                RFilePickerItemDecorator.VERTICAL_LIST,
+                new RFilePickerItemDecorator.RFIlePickerDecorationCallback() {
+                    @Override
+                    public boolean getIsGroupHeadeByPos(int position) {
+                        if ((files.get(position).getFileId() == 0)) {
+                            return true;
+                        }
+                        return false;
+                    }
+                }));
         DocumentRvAdapter adapter = new DocumentRvAdapter(getContext(), files);
         binding.rpRcPhoto.setAdapter(adapter);
     }
