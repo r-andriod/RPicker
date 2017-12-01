@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.upup8.rfilepicker.fragment.DocumentFragment;
+import com.upup8.rfilepicker.fragment.PhotoPickerFragment;
 
 /**
  * TablayoutFragmentPagerAdapter
@@ -24,7 +25,10 @@ public class TablayoutFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return DocumentFragment.newInstance(position + 1);
+        if (position == 0) {
+            return DocumentFragment.newInstance(position + 1);
+        }
+        return new PhotoPickerFragment();
     }
 
     @Override

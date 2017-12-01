@@ -1,13 +1,24 @@
 package com.upup8.rfilepicker.fragment;
 
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.upup8.rfilepicker.R;
+import com.upup8.rfilepicker.adapter.DocumentRvAdapter;
+import com.upup8.rfilepicker.data.RFilePickerConst;
+import com.upup8.rfilepicker.data.cursor.MediaDataHelper;
+import com.upup8.rfilepicker.data.cursor.callback.IFileResultCallback;
+import com.upup8.rfilepicker.databinding.RpickerFragmentDocumentBinding;
+import com.upup8.rfilepicker.model.FileEntity;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,6 +28,7 @@ public class DocumentFragment extends Fragment {
 
     public static final String ARG_PAGE = "ARG_PAGE";
     private int mPage;
+    private RpickerFragmentDocumentBinding binding;
 
     public static DocumentFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -25,7 +37,6 @@ public class DocumentFragment extends Fragment {
         pageFragment.setArguments(args);
         return pageFragment;
     }
-
 
 
     public DocumentFragment() {
@@ -43,8 +54,34 @@ public class DocumentFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.rpicker_fragment_document, container, false);
+        return binding.getRoot();
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_document, container, false);
+        //return inflater.inflate(R.layout.rpicker_fragment_document, container, false);
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initData();
+    }
+
+    private void initData() {
+        Bundle mediaStoreArgs = new Bundle();
+        mediaStoreArgs.putInt(RFilePickerConst.EXTRA_FILE_TYPE, RFilePickerConst.MEDIA_TYPE_IMAGE);
+
+        MediaDataHelper.getImages(getActivity(), mediaStoreArgs,
+                new IFileResultCallback<FileEntity>() {
+                    @Override
+                    public void onResultCallback(List<FileEntity> files) {
+                        initList(files);
+                    }
+                });
+    }
+
+    private void initList(List<FileEntity> files) {
+        binding.rpRcPhoto.setLayoutManager(new LinearLayoutManager(getContext()));
+        DocumentRvAdapter adapter = new DocumentRvAdapter(getContext(), files);
+        binding.rpRcPhoto.setAdapter(adapter);
+    }
 }
