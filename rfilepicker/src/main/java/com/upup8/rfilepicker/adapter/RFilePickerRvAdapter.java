@@ -3,7 +3,9 @@ package com.upup8.rfilepicker.adapter;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
@@ -20,10 +22,10 @@ import static com.upup8.rfilepicker.data.RFilePickerConst.FILE_VH_BODY;
 import static com.upup8.rfilepicker.data.RFilePickerConst.FILE_VH_HEADE;
 
 /**
- * DocumentRvAdapter
+ * RFilePickerRvAdapter
  * Created by renwoxing on 2017/12/1.
  */
-public class DocumentRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     private List<FileEntity> fileEntityList;
@@ -33,9 +35,19 @@ public class DocumentRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private RpfilepickerFileHeadItemBinding headerBinding;
     private RpfilepickerFileBodyItemBinding bodyBinding;
     private LayoutInflater inflater;
+    private RFilePickerItemClickListener clickListener;
+    private OnScrollListener mOnScrollListener;
 
 
-    public DocumentRvAdapter(Context mContext,List<FileEntity> fileEntityList) {
+    @Deprecated
+    public RFilePickerRvAdapter(Context mContext, List<FileEntity> fileEntityList, RFilePickerItemClickListener clickListener) {
+        this.fileEntityList = fileEntityList;
+        this.mContext = mContext;
+        this.inflater = LayoutInflater.from(mContext);
+        this.clickListener = clickListener;
+    }
+
+    public RFilePickerRvAdapter(Context mContext, List<FileEntity> fileEntityList) {
         this.fileEntityList = fileEntityList;
         this.mContext = mContext;
         this.inflater = LayoutInflater.from(mContext);
@@ -66,11 +78,37 @@ public class DocumentRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof FileHeaderViewHolder) {
             //head
             final FileHeaderViewHolder headerViewHolder = (FileHeaderViewHolder) holder;
             headerViewHolder.getBinding().setRfilePickerHeader(fileEntityList.get(position));
+//            headerViewHolder.itemView.setTag(position);
+//            if (clickListener != null) {
+//                headerViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        int pos = headerViewHolder.getLayoutPosition();
+//                        Log.d("adapter head", "onClick: pos:" + fileEntityList.get(pos).toString());
+//                        clickListener.onItemClick(fileEntityList.get(pos).getDirId(), pos);
+//                    }
+//                });
+//            }
+
+            headerViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("---item", "onClick: "+fileEntityList.get(position).isSelect());
+                    if (fileEntityList.get(position).isSelect()) {
+                        headerViewHolder.getBinding().rfilePickerHeaderTvUpDown.setSelected(false);
+                        fileEntityList.get(position).setSelect(false);
+                    } else {
+                        fileEntityList.get(position).setSelect(true);
+                        headerViewHolder.getBinding().rfilePickerHeaderTvUpDown.setSelected(true);
+                    }
+                }
+            });
+            headerViewHolder.getBinding().executePendingBindings();
         } else if (holder instanceof FileBodyViewHolder) {
             //body
             final FileBodyViewHolder bodyViewHolder = (FileBodyViewHolder) holder;
@@ -89,6 +127,7 @@ public class DocumentRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             } else {
                 //Glide.with(mContext).load(fileEntityList.get(position).getFilePath()).into(bodyViewHolder.getBinding().rfilePickerImageType);
             }
+            bodyViewHolder.getBinding().executePendingBindings();
         }
     }
 
@@ -140,4 +179,17 @@ public class DocumentRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             return binding;
         }
     }
+
+
+    /**
+     * 滚动监听接口
+     */
+    public interface OnScrollListener {
+        void scrollTo(int pos);
+    }
+
+    public void setOnScrollListener(OnScrollListener onScrollListener) {
+        this.mOnScrollListener = onScrollListener;
+    }
+
 }

@@ -1,6 +1,6 @@
 package com.upup8.rfilepicker.data.cursor.callback;
 
-import java.util.List;
+import android.util.SparseArray;
 
 /**
  * 文件列表回调
@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface IFileResultCallback<T> {
 
-    void onResultCallback(List<T> files);
+    void onResultCallback(SparseArray<T> groupArr, SparseArray<T> fileArr);
 }

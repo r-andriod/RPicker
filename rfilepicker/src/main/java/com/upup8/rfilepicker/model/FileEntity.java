@@ -23,8 +23,8 @@ public class FileEntity implements Serializable, Parcelable {
         String TEXT = "txt";
     }
 
-    private int fileId;
-    private int dirId;
+    private Long fileId;
+    private Long dirId;
     private String fileName;
     private String filePath;
     private String fileType;
@@ -37,7 +37,7 @@ public class FileEntity implements Serializable, Parcelable {
     public FileEntity() {
     }
 
-    public FileEntity(int fileId, int dirId, String fileName, String filePath, String fileType, long fileSize, String fileThumbnail, long fileModifiedTime, boolean isThumbnail, boolean isSelect) {
+    public FileEntity(Long fileId, Long dirId, String fileName, String filePath, String fileType, long fileSize, String fileThumbnail, long fileModifiedTime, boolean isThumbnail, boolean isSelect) {
         this.fileId = fileId;
         this.dirId = dirId;
         this.fileName = fileName;
@@ -51,7 +51,7 @@ public class FileEntity implements Serializable, Parcelable {
     }
 
 
-    public FileEntity(int fileId, int dirId, String fileName, String filePath, String fileType, long fileSize, long fileModifiedTime) {
+    public FileEntity(Long fileId, Long dirId, String fileName, String filePath, String fileType, long fileSize, long fileModifiedTime) {
         this.fileId = fileId;
         this.dirId = dirId;
         this.fileName = fileName;
@@ -61,19 +61,19 @@ public class FileEntity implements Serializable, Parcelable {
         this.fileModifiedTime = fileModifiedTime;
     }
 
-    public int getDirId() {
+    public Long getDirId() {
         return dirId;
     }
 
-    public void setDirId(int dirId) {
+    public void setDirId(Long dirId) {
         this.dirId = dirId;
     }
 
-    public int getFileId() {
+    public Long getFileId() {
         return fileId;
     }
 
-    public void setFileId(int fileId) {
+    public void setFileId(Long fileId) {
         this.fileId = fileId;
     }
 
@@ -148,8 +148,8 @@ public class FileEntity implements Serializable, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.fileId);
-        dest.writeInt(this.dirId);
+        dest.writeLong(this.fileId);
+        dest.writeLong(this.dirId);
         dest.writeString(this.fileName);
         dest.writeString(this.filePath);
         dest.writeString(this.fileType);
@@ -161,8 +161,8 @@ public class FileEntity implements Serializable, Parcelable {
     }
 
     protected FileEntity(Parcel in) {
-        this.fileId = in.readInt();
-        this.dirId = in.readInt();
+        this.fileId = in.readLong();
+        this.dirId = in.readLong();
         this.fileName = in.readString();
         this.filePath = in.readString();
         this.fileType = in.readString();

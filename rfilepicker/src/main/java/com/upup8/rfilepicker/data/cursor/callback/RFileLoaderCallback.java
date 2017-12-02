@@ -22,8 +22,6 @@ import com.upup8.rfilepicker.model.FileEntity;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * RFileLoaderCallback
@@ -104,7 +102,7 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
         SparseArray<FileEntity> tempArray = new SparseArray<FileEntity>();
         SparseArray<FileEntity> tempDirIdArray = new SparseArray<>();
         //List<FileGroupEntity> fileGroupList = new ArrayList<>();
-        List<FileEntity> fileEntityList = new ArrayList<>();
+        //List<FileEntity> fileEntityList = new ArrayList<>();
 
         if (data.getPosition() != -1) {
             data.moveToPosition(-1);
@@ -113,11 +111,11 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
         inImageIds.append(" in ( ");
         if (data.moveToFirst()) {
             while (data.moveToNext()) {
-                int fileDirId = data.getInt(data.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.BUCKET_ID));
+                Long fileDirId = data.getLong(data.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.BUCKET_ID));
                 String fileDirName = data.getString(data.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME));
                 long time = data.getLong(data.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_MODIFIED));
                 //String name = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)); //
-                int imageId = data.getInt(data.getColumnIndexOrThrow(BaseColumns._ID));
+                Long imageId = data.getLong(data.getColumnIndexOrThrow(BaseColumns._ID));
                 String imagePath = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
                 String name = data.getString(data.getColumnIndexOrThrow(Media.TITLE)); //ImageColumns
                 long size = data.getLong(data.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE));
@@ -136,18 +134,18 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
 
                     /* 分组 */
                     // done: 2017/12/1 判断是否已存在
-                    if (tempDirIdArray.get(fileDirId) == null) {
+                    if (tempDirIdArray.get(fileDirId.intValue()) == null) {
                         FileEntity fileDirInfo = new FileEntity();
-                        fileDirInfo.setFileId(0);
+                        fileDirInfo.setFileId(0l);
                         fileDirInfo.setDirId(fileDirId);
                         fileDirInfo.setFileName(fileDirName);
                         fileDirInfo.setFilePath(imagePath);
                         fileDirInfo.setFileType(FileEntity.FileType.IMAGE);
                         fileDirInfo.setFileSize(1);
-                        tempDirIdArray.put(fileDirId, fileDirInfo);
+                        tempDirIdArray.put(fileDirId.intValue(), fileDirInfo);
                     } else {
                         //更新数量
-                        tempDirIdArray.get(fileDirId).setFileSize(tempDirIdArray.get(fileDirId).getFileSize() + 1);
+                        tempDirIdArray.get(fileDirId.intValue()).setFileSize(tempDirIdArray.get(fileDirId.intValue()).getFileSize() + 1);
                     }
 
                     // file
@@ -159,7 +157,7 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
                     fileInfo.setFileType(String.valueOf(mediaType));
                     fileInfo.setFileSize(size);
                     fileInfo.setFileModifiedTime(time);
-                    tempArray.put(imageId, fileInfo);
+                    tempArray.put(imageId.intValue(), fileInfo);
                     inImageIds.append(imageId).append(",");
 
 
@@ -193,21 +191,21 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
 
 
         /** 处理 SparseArray */
-        for (int i = 0; i < tempDirIdArray.size(); i++) {
-            fileEntityList.add(tempDirIdArray.get(tempDirIdArray.keyAt(i)));
-            for (int j = 0; j < tempArray.size(); j++) {
-                if (tempDirIdArray.keyAt(i) == tempArray.get(tempArray.keyAt(j)).getDirId()) {
-                    fileEntityList.add(tempArray.get(tempArray.keyAt(j)));
-                }
-            }
-        }
+//        for (int i = 0; i < tempDirIdArray.size(); i++) {
+//            fileEntityList.add(tempDirIdArray.get(tempDirIdArray.keyAt(i)));
+//            for (int j = 0; j < tempArray.size(); j++) {
+//                if (tempDirIdArray.keyAt(i) == tempArray.get(tempArray.keyAt(j)).getDirId()) {
+//                    fileEntityList.add(tempArray.get(tempArray.keyAt(j)));
+//                }
+//            }
+//        }
 
 
         /**
          * 返回 list
          */
         if (resultCallback != null) {
-            resultCallback.onResultCallback(fileEntityList);
+            resultCallback.onResultCallback(tempDirIdArray, tempArray);
         }
 
         tempArray.clear();
