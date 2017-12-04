@@ -5,8 +5,8 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +19,11 @@ import com.upup8.rfilepicker.data.cursor.MediaDataHelper;
 import com.upup8.rfilepicker.data.cursor.callback.IFileResultCallback;
 import com.upup8.rfilepicker.databinding.RpickerFragmentDocumentBinding;
 import com.upup8.rfilepicker.model.FileEntity;
-import com.upup8.rfilepicker.view.RFilePickerItemDecorator;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -81,39 +82,33 @@ public class RFilePickerFragment extends Fragment {
                 new IFileResultCallback<FileEntity>() {
                     @Override
                     public void onResultCallback(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
-                        groupArr = dirArr;
-                        fileArr = fileSparseArr;
-                        convertSparseArrayToList(-1l);
-                        initList();
+                        //groupArr = dirArr;
+                        //fileArr = fileSparseArr;
+                        //convertSparseArrayToList(-1l);
+                        initList(dirArr, fileSparseArr);
                     }
                 });
     }
 
 
-    private void initList() {
+    private void initList(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
         binding.rpRcPhoto.setLayoutManager(new LinearLayoutManager(getContext()));
-        //binding.rpRcPhoto.addItemDecoration(new DividerItemDecoration(getContext(), VERTICAL));
-        binding.rpRcPhoto.addItemDecoration(new RFilePickerItemDecorator(getContext(),
-                RFilePickerItemDecorator.VERTICAL_LIST,
-                new RFilePickerItemDecorator.RFIlePickerDecorationCallback() {
-                    @Override
-                    public boolean getIsGroupHeadByPos(int position) {
-                        //Log.d("getIsGroupHeadByPos", "getIsGroupHeadByPos: " + files.get(position).toString());
-                        if (fileEntityList != null && fileEntityList.size() > 0) {
-                            if ((fileEntityList.get(position).getFileId() == 0)) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                }));
-//        RFilePickerRvAdapter adapter = new RFilePickerRvAdapter(getContext(), fileEntityList, new RFilePickerItemClickListener() {
-//            @Override
-//            public void onItemClick(Long groupId, int pos) {
-//                convertSparseArrayToList(groupId);
-//            }
-//        });
-        RFilePickerRvAdapter adapter = new RFilePickerRvAdapter(getContext(), fileEntityList);
+        binding.rpRcPhoto.addItemDecoration(new DividerItemDecoration(getContext(), VERTICAL));
+//        binding.rpRcPhoto.addItemDecoration(new RFilePickerItemDecorator(getContext(),
+//                RFilePickerItemDecorator.VERTICAL_LIST,
+//                new RFilePickerItemDecorator.RFIlePickerDecorationCallback() {
+//                    @Override
+//                    public boolean getIsGroupHeadByPos(int position) {
+//                        //Log.d("getIsGroupHeadByPos", "getIsGroupHeadByPos: " + files.get(position).toString());
+//                        if (fileEntityList != null && fileEntityList.size() > 0) {
+//                            if ((fileEntityList.get(position).getFileId() == 0)) {
+//                                return true;
+//                            }
+//                        }
+//                        return false;
+//                    }
+//                }));
+        RFilePickerRvAdapter adapter = new RFilePickerRvAdapter(getContext(), dirArr, fileSparseArr);
         binding.rpRcPhoto.setAdapter(adapter);
         /**
          * 展开与收起
@@ -125,33 +120,7 @@ public class RFilePickerFragment extends Fragment {
                 binding.rpRcPhoto.scrollToPosition(pos);
             }
         });
-        //adapter.notifyDataSetChanged();
     }
 
-    /**
-     * 处理 SparseArray to list
-     *
-     * @param groupId 根据 group id 来转数据 默认为第一个 group
-     */
-    private void convertSparseArrayToList(Long groupId) {
-//        if (fileEntityList != null && fileEntityList.size() > 0) {
-//            fileEntityList.clear();
-//        }
-        fileEntityList = new ArrayList<>();
-        for (int i = 0; i < groupArr.size(); i++) {
-            fileEntityList.add(groupArr.get(groupArr.keyAt(i)));
-            for (int j = 0; j < fileArr.size(); j++) {
-                if (groupId == -1) {
-                    if (groupArr.keyAt(i) == fileArr.get(fileArr.keyAt(j)).getDirId()) {
-                        fileEntityList.add(fileArr.get(fileArr.keyAt(j)));
-                    }
-                } else {
-                    if (groupArr.keyAt(i) == fileArr.get(fileArr.keyAt(j)).getDirId() && groupArr.keyAt(i) == groupId) {
-                        fileEntityList.add(fileArr.get(fileArr.keyAt(j)));
-                    }
-                }
-            }
-        }
-        Log.d("arr to list", "convertSparseArrayToList:  size: " + fileEntityList.size() + "|" + groupId + " group size:" + groupArr.size());
-    }
+
 }

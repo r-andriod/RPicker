@@ -141,11 +141,12 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
                         fileDirInfo.setFileName(fileDirName);
                         fileDirInfo.setFilePath(imagePath);
                         fileDirInfo.setFileType(FileEntity.FileType.IMAGE);
-                        fileDirInfo.setFileSize(1);
+                        fileDirInfo.setFileSize(0);
+                        fileDirInfo.setDirFileCount(1);
                         tempDirIdArray.put(fileDirId.intValue(), fileDirInfo);
                     } else {
                         //更新数量
-                        tempDirIdArray.get(fileDirId.intValue()).setFileSize(tempDirIdArray.get(fileDirId.intValue()).getFileSize() + 1);
+                        tempDirIdArray.get(fileDirId.intValue()).setDirFileCount(tempDirIdArray.get(fileDirId.intValue()).getDirFileCount() + 1);
                     }
 
                     // file
@@ -156,6 +157,7 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
                     fileInfo.setFilePath(imagePath);
                     fileInfo.setFileType(String.valueOf(mediaType));
                     fileInfo.setFileSize(size);
+                    fileInfo.setDirFileCount(0);
                     fileInfo.setFileModifiedTime(time);
                     tempArray.put(imageId.intValue(), fileInfo);
                     inImageIds.append(imageId).append(",");

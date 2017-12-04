@@ -29,6 +29,7 @@ public class FileEntity implements Serializable, Parcelable {
     private String filePath;
     private String fileType;
     private long fileSize;
+    private int dirFileCount;
     private String fileThumbnail;
     private long fileModifiedTime;
     private boolean isThumbnail;
@@ -141,6 +142,14 @@ public class FileEntity implements Serializable, Parcelable {
         isSelect = select;
     }
 
+    public int getDirFileCount() {
+        return dirFileCount;
+    }
+
+    public void setDirFileCount(int dirFileCount) {
+        this.dirFileCount = dirFileCount;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -158,6 +167,7 @@ public class FileEntity implements Serializable, Parcelable {
         dest.writeLong(this.fileModifiedTime);
         dest.writeByte(this.isThumbnail ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isSelect ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.dirFileCount);
     }
 
     protected FileEntity(Parcel in) {
@@ -171,6 +181,7 @@ public class FileEntity implements Serializable, Parcelable {
         this.fileModifiedTime = in.readLong();
         this.isThumbnail = in.readByte() != 0;
         this.isSelect = in.readByte() != 0;
+        this.dirFileCount = in.readInt();
     }
 
     public static final Creator<FileEntity> CREATOR = new Creator<FileEntity>() {
@@ -194,6 +205,7 @@ public class FileEntity implements Serializable, Parcelable {
                 ", filePath='" + filePath + '\'' +
                 ", fileType='" + fileType + '\'' +
                 ", fileSize=" + fileSize +
+                ", dirFileCount=" + dirFileCount +
                 ", fileThumbnail='" + fileThumbnail + '\'' +
                 ", fileModifiedTime=" + fileModifiedTime +
                 ", isThumbnail=" + isThumbnail +
@@ -201,3 +213,4 @@ public class FileEntity implements Serializable, Parcelable {
                 '}';
     }
 }
+

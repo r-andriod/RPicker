@@ -36,7 +36,7 @@
             android:layout_toLeftOf="@+id/rfile_picker_file_time"
             android:layout_toRightOf="@+id/rfile_picker_image_type"
             android:layout_toStartOf="@+id/rfile_picker_file_time"
-            android:ellipsize="marquee"
+            android:ellipsize="end"
             android:maxLines="2"
             android:singleLine="false"
             android:text='@{rfilePickerBody.fileName +" | "+ rfilePickerBody.filePath }'
