@@ -32,7 +32,8 @@ public class FileEntity implements Parcelable {
     private long fileModifiedTime;
     private boolean isThumbnail;
     private boolean isSelect = false;
-    private int orientation = 0;
+    private int orientation = 0;    //旋转
+    private int duration = 0;    //时长
 
     public FileEntity() {
     }
@@ -157,6 +158,14 @@ public class FileEntity implements Parcelable {
         this.orientation = orientation;
     }
 
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -176,6 +185,7 @@ public class FileEntity implements Parcelable {
         dest.writeByte(this.isSelect ? (byte) 1 : (byte) 0);
         dest.writeInt(this.dirFileCount);
         dest.writeInt(this.orientation);
+        dest.writeInt(this.duration);
     }
 
     protected FileEntity(Parcel in) {
@@ -191,6 +201,7 @@ public class FileEntity implements Parcelable {
         this.isSelect = in.readByte() != 0;
         this.dirFileCount = in.readInt();
         this.orientation = in.readInt();
+        this.duration = in.readInt();
     }
 
     public static final Creator<FileEntity> CREATOR = new Creator<FileEntity>() {
@@ -204,10 +215,6 @@ public class FileEntity implements Parcelable {
             return new FileEntity[size];
         }
     };
-
-
-
-
 
     @Override
     public String toString() {
@@ -224,6 +231,7 @@ public class FileEntity implements Parcelable {
                 ", isThumbnail=" + isThumbnail +
                 ", isSelect=" + isSelect +
                 ", orientation=" + orientation +
+                ", duration=" + duration +
                 '}';
     }
 }

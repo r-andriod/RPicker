@@ -5,8 +5,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 
-import static android.provider.MediaStore.MediaColumns.MIME_TYPE;
-
 /**
  * RVideoLoader
  * Created by renwoxing on 2017/11/29.
@@ -44,10 +42,10 @@ public class RVideoLoader extends CursorLoader {
         setUri(MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
         setSortOrder(MediaStore.Video.Media.DATE_ADDED + " DESC");
 
-        setSelection(MIME_TYPE + "=? or " +
-                MIME_TYPE + "=?");
-        String[] selectionArgs;
-        selectionArgs = new String[]{"video/mpeg", "video/mp4"};
-        setSelectionArgs(selectionArgs);
+        //setSelection(MIME_TYPE + "=? or " +
+        //        MIME_TYPE + "=?");
+        //String[] selectionArgs;
+        //selectionArgs = new String[]{"video/mpeg", "video/mp4"};
+        //setSelectionArgs(selectionArgs);
     }
 }

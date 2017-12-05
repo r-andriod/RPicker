@@ -30,14 +30,18 @@ public class MediaDataHelper {
             activity.getSupportLoaderManager().initLoader(RFilePickerConst.MEDIA_TYPE_VIDEO, args, new RFileLoaderCallback(activity, resultCallback));
     }
 
-//    public static void getAudios(FragmentActivity activity, Bundle args, FilterResultCallback<AudioFile> callback) {
-//        activity.getSupportLoaderManager().initLoader(2, args,
-//                new FileLoaderCallbacks(activity, callback, MEDIA_TYPE_AUDIO));
-//    }
-//
-//    public static void getFiles(FragmentActivity activity,
-//                                FilterResultCallback<NormalFile> callback, String[] suffix) {
-//        activity.getSupportLoaderManager().initLoader(3, null,
-//                new FileLoaderCallbacks(activity, callback, MEDIA_TYPE_FILE, suffix));
-//    }
+    public static void getAudios(FragmentActivity activity, Bundle args, IFileResultCallback<FileEntity> callback) {
+        if (activity.getSupportLoaderManager().getLoader(RFilePickerConst.MEDIA_TYPE_AUDIO) != null)
+            activity.getSupportLoaderManager().restartLoader(RFilePickerConst.MEDIA_TYPE_AUDIO, args, new RFileLoaderCallback(activity, callback));
+        else
+            activity.getSupportLoaderManager().initLoader(RFilePickerConst.MEDIA_TYPE_AUDIO, args, new RFileLoaderCallback(activity, callback));
+    }
+
+    public static void getFiles(FragmentActivity activity, Bundle args, IFileResultCallback<FileEntity> callback) {
+        if (activity.getSupportLoaderManager().getLoader(RFilePickerConst.MEDIA_TYPE_FILE) != null)
+            activity.getSupportLoaderManager().restartLoader(RFilePickerConst.MEDIA_TYPE_FILE, args, new RFileLoaderCallback(activity, callback));
+        else
+            activity.getSupportLoaderManager().initLoader(RFilePickerConst.MEDIA_TYPE_FILE, args, new RFileLoaderCallback(activity, callback));
+
+    }
 }

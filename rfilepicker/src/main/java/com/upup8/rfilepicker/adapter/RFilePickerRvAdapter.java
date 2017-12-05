@@ -3,6 +3,7 @@ package com.upup8.rfilepicker.adapter;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -138,7 +139,8 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
                         fileEntityList.get(position).setSelect(false);
                         Long dirId = fileEntityList.get(position).getDirId();  // DIR id
                         // child pos
-                        int pos = fileEntityList.size() - 1 > position + 1 ? position + 1 : fileEntityList.size() - 1;
+                        int pos = fileEntityList.size() > position + 1 ? position + 1 : fileEntityList.size();
+                        Log.d("FileHeaderViewHolder", "onClick: " + position + " pos:" + pos + " size:" + fileList.size());
                         //Log.d("--2", "onClick:  file arr size:" + fileList.size());
                         addAllChildList(getChildListByGroupId(fileList, dirId), pos);
                     } else {

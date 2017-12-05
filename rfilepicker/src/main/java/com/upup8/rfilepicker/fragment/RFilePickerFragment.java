@@ -103,6 +103,14 @@ public class RFilePickerFragment extends Fragment {
                         });
                 break;
             case RFilePickerConst.MEDIA_TYPE_AUDIO:
+                MediaDataHelper.getAudios(getActivity(), mediaStoreArgs,
+                        new IFileResultCallback<FileEntity>() {
+                            @Override
+                            public void onResultCallback(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
+                                Log.d("--", "------- initData: MEDIA_TYPE_AUDIO size:" + dirArr.size());
+                                initList(dirArr, fileSparseArr);
+                            }
+                        });
                 break;
             case RFilePickerConst.MEDIA_TYPE_FILE:
                 break;

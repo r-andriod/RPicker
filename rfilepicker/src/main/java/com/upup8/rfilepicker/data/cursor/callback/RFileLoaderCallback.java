@@ -80,7 +80,7 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
         if (data == null) return;
         switch (mType) {
             case RFilePickerConst.MEDIA_TYPE_AUDIO:
-                getImageResult(data);
+                getAudioResult(data);
                 break;
             case RFilePickerConst.MEDIA_TYPE_FILE:
                 getImageResult(data);
@@ -235,16 +235,16 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
         inVideoIds.append(" in ( ");
         if (data.moveToFirst()) {
             while (data.moveToNext()) {
-                Long fileDirId = data.getLong(data.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.BUCKET_ID));
-                String fileDirName = data.getString(data.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.BUCKET_DISPLAY_NAME));
+                Long fileDirId = data.getLong(data.getColumnIndexOrThrow(MediaStore.Video.Media.BUCKET_ID));
+                String fileDirName = data.getString(data.getColumnIndexOrThrow(MediaStore.Video.Media.BUCKET_DISPLAY_NAME));
 
                 Long videoId = data.getLong(data.getColumnIndexOrThrow(BaseColumns._ID));
-                String name = data.getString(data.getColumnIndexOrThrow(Media.TITLE)); //ImageColumns
-                String videoPath = data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
-                long size = data.getLong(data.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE));
+                String name = data.getString(data.getColumnIndexOrThrow(MediaStore.Video.Media.TITLE)); //ImageColumns
+                String videoPath = data.getString(data.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.DATA));
+                long size = data.getLong(data.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.SIZE));
                 long time = data.getLong(data.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.DATE_MODIFIED));
 
-                //int orientation = data.getInt(data.getColumnIndexOrThrow(ORIENTATION));
+                int duration = data.getInt(data.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.DURATION));
 
                 int mediaType = 0;
 
@@ -286,6 +286,7 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
                     fileInfo.setDirFileCount(0);
                     fileInfo.setFileModifiedTime(time);
                     //fileInfo.setOrientation(orientation);
+                    fileInfo.setDuration(duration);
                     tempArray.put(videoId.intValue(), fileInfo);
 
                     inVideoIds.append(videoId).append(",");
@@ -315,6 +316,92 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
                 }
             } while (data.moveToNext());
         }
+
+
+        /**
+         * 返回 list
+         */
+        if (resultCallback != null) {
+            resultCallback.onResultCallback(tempDirIdArray, tempArray);
+        }
+
+        tempArray.clear();
+        tempArray = null;
+        tempDirIdArray.clear();
+        tempDirIdArray = null;
+    }
+
+
+    private void getAudioResult(Cursor data) {
+
+        SparseArray<FileEntity> tempArray = new SparseArray<FileEntity>();
+        SparseArray<FileEntity> tempDirIdArray = new SparseArray<>();
+
+        if (data.getPosition() != -1) {
+            data.moveToPosition(-1);
+        }
+
+        if (data.moveToFirst()) {
+            while (data.moveToNext()) {
+                Long fileDirId = data.getLong(data.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
+                String fileDirName = data.getString(data.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
+                if (TextUtils.isEmpty(fileDirName)){
+                    fileDirName = "音频_"+fileDirId;
+                }
+
+                Long fileId = data.getLong(data.getColumnIndexOrThrow(BaseColumns._ID));
+                String name = data.getString(data.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DISPLAY_NAME));
+                String filePath = data.getString(data.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DATA));
+                long size = data.getLong(data.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.SIZE));
+                long time = data.getLong(data.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DATE_MODIFIED));
+
+                int duration = data.getInt(data.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DURATION));
+
+                int mediaType = 0;
+
+                if (!TextUtils.isEmpty(filePath)) {
+                    File file = new File(filePath);
+                    if (!file.exists() || file.length() <= 0) {
+                        continue;
+                    }
+                    if (TextUtils.isEmpty(name)) {
+                        name = filePath.substring(filePath.lastIndexOf("/") + 1);
+                    }
+
+                    /* 分组 */
+                    // done: 2017/12/1 判断是否已存在
+                    if (tempDirIdArray.get(fileDirId.intValue()) == null) {
+                        FileEntity fileDirInfo = new FileEntity();
+                        fileDirInfo.setFileId(0l);
+                        fileDirInfo.setDirId(fileDirId);
+                        fileDirInfo.setFileName(fileDirName);
+                        fileDirInfo.setFilePath(filePath);
+                        fileDirInfo.setFileType(FileEntity.FileType.MP3);
+                        fileDirInfo.setFileSize(0);
+                        fileDirInfo.setDirFileCount(1);
+                        tempDirIdArray.put(fileDirId.intValue(), fileDirInfo);
+                    } else {
+                        //更新数量
+                        tempDirIdArray.get(fileDirId.intValue()).setDirFileCount(tempDirIdArray.get(fileDirId.intValue()).getDirFileCount() + 1);
+                    }
+
+                    // file
+                    FileEntity fileInfo = new FileEntity();
+                    fileInfo.setFileId(fileId);
+                    fileInfo.setDirId(fileDirId);
+                    fileInfo.setFileName(name);
+                    fileInfo.setFilePath(filePath);
+                    fileInfo.setFileType(String.valueOf(mediaType));
+                    fileInfo.setFileSize(size);
+                    fileInfo.setDirFileCount(0);
+                    fileInfo.setFileModifiedTime(time);
+                    fileInfo.setDuration(duration);
+                    tempArray.put(fileId.intValue(), fileInfo);
+
+                }
+            }
+        }
+
 
 
         /**
