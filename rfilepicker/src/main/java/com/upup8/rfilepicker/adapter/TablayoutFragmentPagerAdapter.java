@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.upup8.rfilepicker.fragment.RFilePickerFragment;
-import com.upup8.rfilepicker.fragment.PhotoPickerFragment;
 
 /**
  * TablayoutFragmentPagerAdapter
@@ -15,7 +14,7 @@ import com.upup8.rfilepicker.fragment.PhotoPickerFragment;
 public class TablayoutFragmentPagerAdapter extends FragmentPagerAdapter {
 
     //final int PAGE_COUNT = 4;
-    private String tabTitles[] = new String[]{"文档", "图片", "影音", "其它"};
+    private String tabTitles[] = new String[]{"图片", "视频", "语音", "文档"};
     private Context context;
 
     public TablayoutFragmentPagerAdapter(FragmentManager fm, Context context) {
@@ -25,10 +24,11 @@ public class TablayoutFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        if (position == 0) {
-            return RFilePickerFragment.newInstance(position + 1);
-        }
-        return new PhotoPickerFragment();
+//        if (position == 0) {
+//            return RFilePickerFragment.newInstance(RFilePickerConst.MEDIA_TYPE_IMAGE);
+//        }
+        return RFilePickerFragment.newInstance(position);
+        //return new PhotoPickerFragment();
     }
 
     @Override

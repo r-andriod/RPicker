@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,16 +32,16 @@ import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 public class RFilePickerFragment extends Fragment {
 
 
-    public static final String ARG_PAGE = "ARG_PAGE";
-    private int mPage;
+    public static final String ARG_FILE_TYPE = "arg_file_type";
+    private int mFileType;
     private RpickerFragmentDocumentBinding binding;
     private List<FileEntity> fileEntityList;
     private SparseArray<FileEntity> groupArr = new SparseArray<>();
     private SparseArray<FileEntity> fileArr = new SparseArray<>();
 
-    public static RFilePickerFragment newInstance(int page) {
+    public static RFilePickerFragment newInstance(int type) {
         Bundle args = new Bundle();
-        args.putInt(ARG_PAGE, page);
+        args.putInt(ARG_FILE_TYPE, type);
         RFilePickerFragment pageFragment = new RFilePickerFragment();
         pageFragment.setArguments(args);
         return pageFragment;
@@ -55,7 +56,7 @@ public class RFilePickerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPage = getArguments().getInt(ARG_PAGE);
+        mFileType = getArguments().getInt(ARG_FILE_TYPE);
     }
 
 
@@ -76,18 +77,36 @@ public class RFilePickerFragment extends Fragment {
 
     private void initData() {
         Bundle mediaStoreArgs = new Bundle();
-        mediaStoreArgs.putInt(RFilePickerConst.EXTRA_FILE_TYPE, RFilePickerConst.MEDIA_TYPE_IMAGE);
+        mediaStoreArgs.putInt(RFilePickerConst.EXTRA_FILE_TYPE, mFileType);
+        switch (mFileType) {
+            case RFilePickerConst.MEDIA_TYPE_IMAGE:
+                MediaDataHelper.getImages(getActivity(), mediaStoreArgs,
+                        new IFileResultCallback<FileEntity>() {
+                            @Override
+                            public void onResultCallback(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
+                                //groupArr = dirArr;
+                                //fileArr = fileSparseArr;
+                                //convertSparseArrayToList(-1l);
+                                initList(dirArr, fileSparseArr);
+                            }
+                        });
+                break;
+            case RFilePickerConst.MEDIA_TYPE_VIDEO:
 
-        MediaDataHelper.getImages(getActivity(), mediaStoreArgs,
-                new IFileResultCallback<FileEntity>() {
-                    @Override
-                    public void onResultCallback(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
-                        //groupArr = dirArr;
-                        //fileArr = fileSparseArr;
-                        //convertSparseArrayToList(-1l);
-                        initList(dirArr, fileSparseArr);
-                    }
-                });
+                MediaDataHelper.getVideos(getActivity(), mediaStoreArgs,
+                        new IFileResultCallback<FileEntity>() {
+                            @Override
+                            public void onResultCallback(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
+                                Log.d("--", "------- initData: MEDIA_TYPE_VIDEO size:" + dirArr.size());
+                                initList(dirArr, fileSparseArr);
+                            }
+                        });
+                break;
+            case RFilePickerConst.MEDIA_TYPE_AUDIO:
+                break;
+            case RFilePickerConst.MEDIA_TYPE_FILE:
+                break;
+        }
     }
 
 

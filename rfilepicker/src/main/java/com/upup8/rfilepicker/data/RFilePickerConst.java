@@ -6,10 +6,10 @@ package com.upup8.rfilepicker.data;
  */
 public interface RFilePickerConst {
 
-    int MEDIA_TYPE_IMAGE = 1;
-    int MEDIA_TYPE_VIDEO = 2;
-    int MEDIA_TYPE_AUDIO = 3;
-    int MEDIA_TYPE_FILE = 4;
+    int MEDIA_TYPE_IMAGE = 0;
+    int MEDIA_TYPE_VIDEO = 1;
+    int MEDIA_TYPE_AUDIO = 2;
+    int MEDIA_TYPE_FILE = 3;
 
     String EXTRA_FILE_TYPE = "EXTRA_FILE_TYPE";
 

@@ -3,7 +3,6 @@ package com.upup8.rfilepicker.adapter;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,8 +30,6 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 
     private List<FileEntity> fileEntityList;
-    //private SparseArray<FileEntity> dirArr;
-    //private SparseArray<FileEntity> fileArr;
     private List<FileEntity> fileList;
 
     private Context mContext;
@@ -56,11 +53,8 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     public RFilePickerRvAdapter(Context mContext, SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileArr) {
-        //this.dirArr = dirArr;
-        //this.fileArr = fileArr;
         fileList = new ArrayList<>();
         for (int i = 0; i < fileArr.size(); i++) {
-            //fileArr.put(fileArr.keyAt(i), fileArr.valueAt(i));
             fileList.add(fileArr.valueAt(i));
         }
         this.fileEntityList = convertSparseArrayToList(dirArr, fileArr, -1l);
@@ -145,7 +139,7 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
                         Long dirId = fileEntityList.get(position).getDirId();  // DIR id
                         // child pos
                         int pos = fileEntityList.size() - 1 > position + 1 ? position + 1 : fileEntityList.size() - 1;
-                        Log.d("--2", "onClick:  file arr size:" + fileList.size());
+                        //Log.d("--2", "onClick:  file arr size:" + fileList.size());
                         addAllChildList(getChildListByGroupId(fileList, dirId), pos);
                     } else {
                         fileEntityList.get(position).setSelect(true);
@@ -217,7 +211,7 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
                 }
             }
         }
-        Log.d("arr to list", "convertSparseArrayToList:  size: " + fileList.size() + "|" + groupId + " group size:" + groupArr.size());
+        //Log.d("arr to list", "convertSparseArrayToList:  size: " + fileList.size() + "|" + groupId + " group size:" + groupArr.size());
         return fileList;
     }
 
@@ -236,7 +230,7 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
                 retFileList.add(sourceFileList.get(j));
             }
         }
-        Log.d(" child----", "getChildListByGroupId: size: " + retFileList.size() + " file list size:" + sourceFileList.size() + " | dir id:" + groupId);
+        //Log.d(" child----", "getChildListByGroupId: size: " + retFileList.size() + " file list size:" + sourceFileList.size() + " | dir id:" + groupId);
         return retFileList;
     }
 

@@ -3,13 +3,11 @@ package com.upup8.rfilepicker.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-
 /**
  * FileEntity
  * Created by renwoxing on 2017/11/28.
  */
-public class FileEntity implements Serializable, Parcelable {
+public class FileEntity implements Parcelable {
 
     public interface FileType {//文件类型
         String VIDEO = "video";
@@ -34,6 +32,7 @@ public class FileEntity implements Serializable, Parcelable {
     private long fileModifiedTime;
     private boolean isThumbnail;
     private boolean isSelect = false;
+    private int orientation = 0;
 
     public FileEntity() {
     }
@@ -150,6 +149,14 @@ public class FileEntity implements Serializable, Parcelable {
         this.dirFileCount = dirFileCount;
     }
 
+    public int getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(int orientation) {
+        this.orientation = orientation;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -168,6 +175,7 @@ public class FileEntity implements Serializable, Parcelable {
         dest.writeByte(this.isThumbnail ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isSelect ? (byte) 1 : (byte) 0);
         dest.writeInt(this.dirFileCount);
+        dest.writeInt(this.orientation);
     }
 
     protected FileEntity(Parcel in) {
@@ -182,6 +190,7 @@ public class FileEntity implements Serializable, Parcelable {
         this.isThumbnail = in.readByte() != 0;
         this.isSelect = in.readByte() != 0;
         this.dirFileCount = in.readInt();
+        this.orientation = in.readInt();
     }
 
     public static final Creator<FileEntity> CREATOR = new Creator<FileEntity>() {
@@ -195,6 +204,10 @@ public class FileEntity implements Serializable, Parcelable {
             return new FileEntity[size];
         }
     };
+
+
+
+
 
     @Override
     public String toString() {
@@ -210,6 +223,7 @@ public class FileEntity implements Serializable, Parcelable {
                 ", fileModifiedTime=" + fileModifiedTime +
                 ", isThumbnail=" + isThumbnail +
                 ", isSelect=" + isSelect +
+                ", orientation=" + orientation +
                 '}';
     }
 }
