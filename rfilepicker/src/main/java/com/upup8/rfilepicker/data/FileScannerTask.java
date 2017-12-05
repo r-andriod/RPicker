@@ -19,6 +19,7 @@ import static android.provider.MediaStore.MediaColumns.DATA;
  * FileScannerTask
  * Created by renwoxing on 2017/11/28.
  */
+@Deprecated
 public class FileScannerTask extends AsyncTask<Void, Void, List<FileEntity>> {
 
     public interface FileScannerCallback {

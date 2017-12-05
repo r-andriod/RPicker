@@ -9,7 +9,7 @@ public interface RFilePickerConst {
     int MEDIA_TYPE_IMAGE = 0;
     int MEDIA_TYPE_VIDEO = 1;
     int MEDIA_TYPE_AUDIO = 2;
-    int MEDIA_TYPE_FILE = 3;
+    int MEDIA_TYPE_DOCUMENT = 3;
 
     String EXTRA_FILE_TYPE = "EXTRA_FILE_TYPE";
 

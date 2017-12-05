@@ -37,11 +37,26 @@ public class MediaDataHelper {
             activity.getSupportLoaderManager().initLoader(RFilePickerConst.MEDIA_TYPE_AUDIO, args, new RFileLoaderCallback(activity, callback));
     }
 
-    public static void getFiles(FragmentActivity activity, Bundle args, IFileResultCallback<FileEntity> callback) {
-        if (activity.getSupportLoaderManager().getLoader(RFilePickerConst.MEDIA_TYPE_FILE) != null)
-            activity.getSupportLoaderManager().restartLoader(RFilePickerConst.MEDIA_TYPE_FILE, args, new RFileLoaderCallback(activity, callback));
+    public static void getDocument(FragmentActivity activity, Bundle args, IFileResultCallback<FileEntity> callback) {
+        if (activity.getSupportLoaderManager().getLoader(RFilePickerConst.MEDIA_TYPE_DOCUMENT) != null)
+            activity.getSupportLoaderManager().restartLoader(RFilePickerConst.MEDIA_TYPE_DOCUMENT, args, new RFileLoaderCallback(activity, callback));
         else
-            activity.getSupportLoaderManager().initLoader(RFilePickerConst.MEDIA_TYPE_FILE, args, new RFileLoaderCallback(activity, callback));
+            activity.getSupportLoaderManager().initLoader(RFilePickerConst.MEDIA_TYPE_DOCUMENT, args, new RFileLoaderCallback(activity, callback));
+
+    }
+
+    /**
+     * 根据条件查询不同类型的方法
+     * @param activity
+     * @param args
+     * @param callback
+     */
+    public static void getFiles(FragmentActivity activity, Bundle args, IFileResultCallback<FileEntity> callback) {
+        int mType = args.getInt(RFilePickerConst.EXTRA_FILE_TYPE, RFilePickerConst.MEDIA_TYPE_IMAGE);
+        if (activity.getSupportLoaderManager().getLoader(mType) != null)
+            activity.getSupportLoaderManager().restartLoader(mType, args, new RFileLoaderCallback(activity, callback));
+        else
+            activity.getSupportLoaderManager().initLoader(mType, args, new RFileLoaderCallback(activity, callback));
 
     }
 }

@@ -78,43 +78,60 @@ public class RFilePickerFragment extends Fragment {
     private void initData() {
         Bundle mediaStoreArgs = new Bundle();
         mediaStoreArgs.putInt(RFilePickerConst.EXTRA_FILE_TYPE, mFileType);
-        switch (mFileType) {
-            case RFilePickerConst.MEDIA_TYPE_IMAGE:
-                MediaDataHelper.getImages(getActivity(), mediaStoreArgs,
-                        new IFileResultCallback<FileEntity>() {
-                            @Override
-                            public void onResultCallback(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
-                                //groupArr = dirArr;
-                                //fileArr = fileSparseArr;
-                                //convertSparseArrayToList(-1l);
-                                initList(dirArr, fileSparseArr);
-                            }
-                        });
-                break;
-            case RFilePickerConst.MEDIA_TYPE_VIDEO:
+        MediaDataHelper.getFiles(getActivity(),
+                mediaStoreArgs,
+                new IFileResultCallback<FileEntity>() {
+                    @Override
+                    public void onResultCallback(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
+                        initList(dirArr, fileSparseArr);
+                    }
+                });
 
-                MediaDataHelper.getVideos(getActivity(), mediaStoreArgs,
-                        new IFileResultCallback<FileEntity>() {
-                            @Override
-                            public void onResultCallback(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
-                                Log.d("--", "------- initData: MEDIA_TYPE_VIDEO size:" + dirArr.size());
-                                initList(dirArr, fileSparseArr);
-                            }
-                        });
-                break;
-            case RFilePickerConst.MEDIA_TYPE_AUDIO:
-                MediaDataHelper.getAudios(getActivity(), mediaStoreArgs,
-                        new IFileResultCallback<FileEntity>() {
-                            @Override
-                            public void onResultCallback(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
-                                Log.d("--", "------- initData: MEDIA_TYPE_AUDIO size:" + dirArr.size());
-                                initList(dirArr, fileSparseArr);
-                            }
-                        });
-                break;
-            case RFilePickerConst.MEDIA_TYPE_FILE:
-                break;
-        }
+//        switch (mFileType) {
+//            case RFilePickerConst.MEDIA_TYPE_IMAGE:
+//                MediaDataHelper.getImages(getActivity(), mediaStoreArgs,
+//                        new IFileResultCallback<FileEntity>() {
+//                            @Override
+//                            public void onResultCallback(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
+//                                //groupArr = dirArr;
+//                                //fileArr = fileSparseArr;
+//                                //convertSparseArrayToList(-1l);
+//                                initList(dirArr, fileSparseArr);
+//                            }
+//                        });
+//                break;
+//            case RFilePickerConst.MEDIA_TYPE_VIDEO:
+//
+//                MediaDataHelper.getVideos(getActivity(), mediaStoreArgs,
+//                        new IFileResultCallback<FileEntity>() {
+//                            @Override
+//                            public void onResultCallback(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
+//                                Log.d("--", "------- initData: MEDIA_TYPE_VIDEO size:" + dirArr.size());
+//                                initList(dirArr, fileSparseArr);
+//                            }
+//                        });
+//                break;
+//            case RFilePickerConst.MEDIA_TYPE_AUDIO:
+//                MediaDataHelper.getAudios(getActivity(), mediaStoreArgs,
+//                        new IFileResultCallback<FileEntity>() {
+//                            @Override
+//                            public void onResultCallback(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
+//                                Log.d("--", "------- initData: MEDIA_TYPE_AUDIO size:" + dirArr.size());
+//                                initList(dirArr, fileSparseArr);
+//                            }
+//                        });
+//                break;
+//            case RFilePickerConst.MEDIA_TYPE_DOCUMENT:
+//                MediaDataHelper.getDocument(getActivity(), mediaStoreArgs,
+//                        new IFileResultCallback<FileEntity>() {
+//                            @Override
+//                            public void onResultCallback(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
+//                                Log.d("--", "------- initData: MEDIA_TYPE_DOCUMENT size:" + dirArr.size());
+//                                initList(dirArr, fileSparseArr);
+//                            }
+//                        });
+//                break;
+//        }
     }
 
 

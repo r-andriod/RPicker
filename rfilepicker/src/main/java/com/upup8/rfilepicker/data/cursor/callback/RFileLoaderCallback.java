@@ -15,7 +15,7 @@ import android.util.SparseArray;
 
 import com.upup8.rfilepicker.data.RFilePickerConst;
 import com.upup8.rfilepicker.data.cursor.loader.RAudioLoader;
-import com.upup8.rfilepicker.data.cursor.loader.RFileLoader;
+import com.upup8.rfilepicker.data.cursor.loader.RDocumentLoader;
 import com.upup8.rfilepicker.data.cursor.loader.RImageLoader;
 import com.upup8.rfilepicker.data.cursor.loader.RVideoLoader;
 import com.upup8.rfilepicker.model.FileEntity;
@@ -36,7 +36,7 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
 
     private IFileResultCallback<FileEntity> resultCallback;
 
-    private int mType = RFilePickerConst.MEDIA_TYPE_FILE;
+    private int mType = RFilePickerConst.MEDIA_TYPE_IMAGE;
 
     private static final String[] thumbnailProjection = {
             Thumbnails.DATA,
@@ -64,14 +64,14 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
         switch (mType) {
             case RFilePickerConst.MEDIA_TYPE_AUDIO:
                 return new RAudioLoader(context.get());
-            case RFilePickerConst.MEDIA_TYPE_FILE:
-                return new RFileLoader(context.get());
+            case RFilePickerConst.MEDIA_TYPE_DOCUMENT:
+                return new RDocumentLoader(context.get());
             case RFilePickerConst.MEDIA_TYPE_IMAGE:
                 return new RImageLoader(context.get());
             case RFilePickerConst.MEDIA_TYPE_VIDEO:
                 return new RVideoLoader(context.get());
             default:
-                return new RFileLoader(context.get());
+                return new RDocumentLoader(context.get());
         }
     }
 
@@ -82,8 +82,8 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
             case RFilePickerConst.MEDIA_TYPE_AUDIO:
                 getAudioResult(data);
                 break;
-            case RFilePickerConst.MEDIA_TYPE_FILE:
-                getImageResult(data);
+            case RFilePickerConst.MEDIA_TYPE_DOCUMENT:
+                getDocumentResult(data);
                 break;
             case RFilePickerConst.MEDIA_TYPE_IMAGE:
                 getImageResult(data);
@@ -345,8 +345,8 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
             while (data.moveToNext()) {
                 Long fileDirId = data.getLong(data.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
                 String fileDirName = data.getString(data.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
-                if (TextUtils.isEmpty(fileDirName)){
-                    fileDirName = "音频_"+fileDirId;
+                if (TextUtils.isEmpty(fileDirName)) {
+                    fileDirName = "音频_" + fileDirId;
                 }
 
                 Long fileId = data.getLong(data.getColumnIndexOrThrow(BaseColumns._ID));
@@ -402,6 +402,99 @@ public class RFileLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor
             }
         }
 
+
+        /**
+         * 返回 list
+         */
+        if (resultCallback != null) {
+            resultCallback.onResultCallback(tempDirIdArray, tempArray);
+        }
+
+        tempArray.clear();
+        tempArray = null;
+        tempDirIdArray.clear();
+        tempDirIdArray = null;
+    }
+
+
+    private void getDocumentResult(Cursor data) {
+
+        SparseArray<FileEntity> tempArray = new SparseArray<FileEntity>();
+        SparseArray<FileEntity> tempDirIdArray = new SparseArray<>();
+        String[] documentMimeTypeArr = new String[]{"text/txt", "text/plain", "application/msword", "application/pdf", "application/vnd.ms-powerpoint", "application/vnd.ms-excel"};
+        String[] documentMimeTypeStringArr = new String[]{"文本", "文本", "Word", "PDF", "PPT", "Excel"};
+
+        if (data.getPosition() != -1) {
+            data.moveToPosition(-1);
+        }
+
+        if (data.moveToFirst()) {
+            while (data.moveToNext()) {
+                //Long fileDirId = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE));
+                Long fileDirId = 0l;
+                //String fileDirName = data.getString(data.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
+                String fileDirName = "文档";
+
+
+                Long fileId = data.getLong(data.getColumnIndexOrThrow(BaseColumns._ID));
+                String name = data.getString(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns.TITLE));
+                String filePath = data.getString(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA));
+                long size = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE));
+                long time = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED));
+
+                //int duration = data.getInt(data.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DURATION));
+
+                String mimeType = (data.getString(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE)));
+
+                for (int i = 0; i < documentMimeTypeArr.length; i++) {
+                    if (mimeType.equals(documentMimeTypeArr[i])) {
+                        fileDirId = i == 0 ? 1l : Long.valueOf(i);
+                        fileDirName = documentMimeTypeStringArr[i];
+                    }
+                }
+
+                if (!TextUtils.isEmpty(filePath)) {
+                    File file = new File(filePath);
+                    if (!file.exists() || file.length() <= 0) {
+                        continue;
+                    }
+                    if (TextUtils.isEmpty(name)) {
+                        name = filePath.substring(filePath.lastIndexOf("/") + 1);
+                    }
+
+                    /* 分组 */
+                    // done: 2017/12/1 判断是否已存在
+                    if (tempDirIdArray.get(fileDirId.intValue()) == null) {
+                        FileEntity fileDirInfo = new FileEntity();
+                        fileDirInfo.setFileId(0l);
+                        fileDirInfo.setDirId(fileDirId);
+                        fileDirInfo.setFileName(fileDirName);
+                        fileDirInfo.setFilePath(filePath);
+                        fileDirInfo.setFileType(mimeType);
+                        fileDirInfo.setFileSize(0);
+                        fileDirInfo.setDirFileCount(1);
+                        tempDirIdArray.put(fileDirId.intValue(), fileDirInfo);
+                    } else {
+                        //更新数量
+                        tempDirIdArray.get(fileDirId.intValue()).setDirFileCount(tempDirIdArray.get(fileDirId.intValue()).getDirFileCount() + 1);
+                    }
+
+                    // file
+                    FileEntity fileInfo = new FileEntity();
+                    fileInfo.setFileId(fileId);
+                    fileInfo.setDirId(fileDirId);
+                    fileInfo.setFileName(name);
+                    fileInfo.setFilePath(filePath);
+                    fileInfo.setFileType(mimeType);
+                    fileInfo.setFileSize(size);
+                    fileInfo.setDirFileCount(0);
+                    fileInfo.setFileModifiedTime(time);
+                    //fileInfo.setDuration(duration);
+                    tempArray.put(fileId.intValue(), fileInfo);
+
+                }
+            }
+        }
 
 
         /**

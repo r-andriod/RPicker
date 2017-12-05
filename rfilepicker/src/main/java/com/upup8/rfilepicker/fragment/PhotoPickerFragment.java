@@ -10,8 +10,10 @@ import android.view.ViewGroup;
 import com.upup8.rfilepicker.R;
 
 /**
- * A simple {@link Fragment} subclass.
+ * 单独图片展示部分
+ * 暂未实现
  */
+@Deprecated
 public class PhotoPickerFragment extends Fragment {
 
 
