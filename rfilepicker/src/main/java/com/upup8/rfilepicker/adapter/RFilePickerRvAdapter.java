@@ -3,6 +3,7 @@ package com.upup8.rfilepicker.adapter;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,8 +30,12 @@ import static com.upup8.rfilepicker.data.RFilePickerConst.FILE_VH_HEADE;
 public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
-    private List<FileEntity> fileEntityList;
-    private List<FileEntity> fileList;
+    // 数据展示 list
+    private List<FileEntity> mFileEntityList;
+    //全部 list
+    private List<FileEntity> mAllfileList;
+    //选择 list
+    private List<FileEntity> mSelectFileList;
 
     private Context mContext;
 
@@ -46,18 +51,19 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Deprecated
     public RFilePickerRvAdapter(Context mContext, List<FileEntity> fileEntityList, RFilePickerItemClickListener clickListener) {
-        this.fileEntityList = fileEntityList;
+        this.mFileEntityList = fileEntityList;
         this.mContext = mContext;
         this.inflater = LayoutInflater.from(mContext);
         this.clickListener = clickListener;
     }
 
     public RFilePickerRvAdapter(Context mContext, SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileArr) {
-        fileList = new ArrayList<>();
+        mAllfileList = new ArrayList<>();
         for (int i = 0; i < fileArr.size(); i++) {
-            fileList.add(fileArr.valueAt(i));
+            mAllfileList.add(fileArr.valueAt(i));
         }
-        this.fileEntityList = convertSparseArrayToList(dirArr, fileArr, -1l);
+        this.mFileEntityList = convertSparseArrayToList(dirArr, fileArr, -1l);
+        this.mSelectFileList = new ArrayList<>();
         this.mContext = mContext;
         this.inflater = LayoutInflater.from(mContext);
     }
@@ -83,14 +89,17 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
         if (holder instanceof FileHeaderViewHolder) {
             //heada
             final FileHeaderViewHolder headerViewHolder = (FileHeaderViewHolder) holder;
-            headerViewHolder.getBinding().setRfilePickerHeader(fileEntityList.get(position));
+            headerViewHolder.getBinding().setRfilePickerHeader(mFileEntityList.get(position));
             headerViewHolder.getBinding().executePendingBindings();
         } else if (holder instanceof FileBodyViewHolder) {
             //body
             final FileBodyViewHolder bodyViewHolder = (FileBodyViewHolder) holder;
-            bodyViewHolder.getBinding().setRfilePickerBody(fileEntityList.get(position));
-            if (fileEntityList.get(position).isThumbnail()) {
-                String imagePath = fileEntityList.get(position).getFileThumbnail();
+            bodyViewHolder.getBinding().setRfilePickerBody(mFileEntityList.get(position));
+            //设置选中与否
+            bodyViewHolder.binding.rfilePickerSelect.setSelected(mFileEntityList.get(position).isSelect());
+
+            if (mFileEntityList.get(position).isThumbnail()) {
+                String imagePath = mFileEntityList.get(position).getFileThumbnail();
                 Glide.with(mContext)
                         .load(new File(imagePath))
                         .apply(RequestOptions
@@ -109,7 +118,7 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemViewType(int position) {
-        if (fileEntityList.get(position).getFileId() == 0) {
+        if (mFileEntityList.get(position).getFileId() == 0) {
             return FILE_VH_HEADE;
         } else {
             return FILE_VH_BODY;
@@ -118,7 +127,7 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
-        return fileEntityList.size();
+        return mFileEntityList.size();
     }
 
 
@@ -133,22 +142,22 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
                 @Override
                 public void onClick(View view) {
                     final int position = getLayoutPosition();
-                    if (fileEntityList.get(position).isSelect()) {
+                    if (mFileEntityList.get(position).isSelect()) {
                         binding.rfilePickerHeaderTvUpDown.setSelected(false);
-                        fileEntityList.get(position).setSelect(false);
-                        Long dirId = fileEntityList.get(position).getDirId();  // DIR id
+                        mFileEntityList.get(position).setSelect(false);
+                        Long dirId = mFileEntityList.get(position).getDirId();  // DIR id
                         // child pos
-                        int pos = fileEntityList.size() > position + 1 ? position + 1 : fileEntityList.size();
+                        int pos = mFileEntityList.size() > position + 1 ? position + 1 : mFileEntityList.size();
                         //Log.d("FileHeaderViewHolder", "onClick: " + position + " pos:" + pos + " size:" + fileList.size());
                         //Log.d("--2", "onClick:  file arr size:" + fileList.size());
-                        addAllChildList(getChildListByGroupId(fileList, dirId), pos);
+                        addAllChildList(getChildListByGroupId(mAllfileList, dirId), pos);
                     } else {
-                        fileEntityList.get(position).setSelect(true);
+                        mFileEntityList.get(position).setSelect(true);
                         binding.rfilePickerHeaderTvUpDown.setSelected(true);
                         //Log.d("---item", "list size:" + fileEntityList.size() + "pos: " + position + " file size:" + fileEntityList.get(position).getDirFileCount() + "\n" + fileEntityList.get(position).toString());
-                        int pos = fileEntityList.size() - 1 > position + 1 ? position + 1 : fileEntityList.size() - 1;
-                        if (fileEntityList.get(pos).getFileId() != 0) { //防止 误删除下一个 group
-                            deleteAllChildList(pos, (int) fileEntityList.get(position).getDirFileCount());
+                        int pos = mFileEntityList.size() - 1 > position + 1 ? position + 1 : mFileEntityList.size() - 1;
+                        if (mFileEntityList.get(pos).getFileId() != 0) { //防止 误删除下一个 group
+                            deleteAllChildList(pos, (int) mFileEntityList.get(position).getDirFileCount());
                         }
                     }
                 }
@@ -168,6 +177,34 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
         public FileBodyViewHolder(RpfilepickerFileBodyItemBinding itemBinding) {
             super(itemBinding.getRoot());
             this.binding = itemBinding;
+
+            binding.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final int position = getLayoutPosition();
+                    FileEntity tmp = mAllfileList.get(mAllfileList.indexOf(mFileEntityList.get(position)));
+                    boolean exist = mSelectFileList.contains(tmp);
+                    Log.d("body", "---------- >onClick: exist:" + exist + " string:\n" + tmp.toString() + " \n select size:" + mSelectFileList.size());
+                    if (exist) {
+                        mSelectFileList.remove(tmp);
+                        binding.rfilePickerSelect.setSelected(false);
+                        tmp.setSelect(false);
+                        //Long dirId = mFileEntityList.get(position).getDirId();  // DIR id
+                        // child pos
+                        //int pos = mFileEntityList.size() > position + 1 ? position + 1 : mFileEntityList.size();
+
+                    } else {
+                        mSelectFileList.add(tmp);
+                        //mFileEntityList.get(position).setSelect(true);
+                        binding.rfilePickerSelect.setSelected(true);
+                        tmp.setSelect(true);
+                        //Log.d("---item", "list size:" + fileEntityList.size() + "pos: " + position + " file size:" + fileEntityList.get(position).getDirFileCount() + "\n" + fileEntityList.get(position).toString());
+//                        int pos = mFileEntityList.size() - 1 > position + 1 ? position + 1 : mFileEntityList.size() - 1;
+//                        if (mFileEntityList.get(pos).getFileId() != 0) { //防止 误删除下一个 group
+//                        }
+                    }
+                }
+            });
         }
 
         public RpfilepickerFileBodyItemBinding getBinding() {
@@ -226,8 +263,10 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
     private List<FileEntity> getChildListByGroupId(List<FileEntity> sourceFileList, Long groupId) {
         List<FileEntity> retFileList = new ArrayList<>();
         for (int j = 0; j < sourceFileList.size(); j++) {
-            //Log.d("---- >", j + ": getChildListByGroupId: " + sourceFileList.get(j).getDirId());
-            if (groupId.equals(sourceFileList.get(j).getDirId()) && sourceFileList.get(j).getDirId().longValue() == groupId.longValue()) {
+            //Log.d("---- >", j + ": getChildListByGroupId: " + sourceFileList.get(j).toString());
+            //if (groupId.equals(sourceFileList.get(j).getDirId()) && sourceFileList.get(j).getDirId().longValue() == groupId.longValue()) {
+            if (groupId.equals(sourceFileList.get(j).getDirId())) {
+                //Log.d("<---", "getChildListByGroupId: " + sourceFileList.get(j).toString());
                 retFileList.add(sourceFileList.get(j));
             }
         }
@@ -243,7 +282,7 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
      * @param position
      */
     private void addAllChildList(List<FileEntity> lists, int position) {
-        fileEntityList.addAll(position, lists);
+        mFileEntityList.addAll(position, lists);
         notifyItemRangeInserted(position, lists.size());
     }
 
@@ -256,7 +295,7 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
     private void deleteAllChildList(int position, int itemCount) {
         for (int i = 0; i < itemCount; i++) {
             //Log.d("del---", "deleteAllChildList: pos:" + position + "|" + itemCount);
-            fileEntityList.remove(position);
+            mFileEntityList.remove(position);
         }
         notifyItemRangeRemoved(position, itemCount);
     }

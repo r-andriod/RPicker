@@ -39,7 +39,7 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:singleLine="false"
-            android:text='@{rfilePickerBody.fileName +" | "+ rfilePickerBody.filePath }'
+            android:text='@{rfilePickerBody.fileName }'
             android:textColor="@color/color000000"
             android:textSize="14sp" />
 
@@ -72,6 +72,18 @@
             android:text="@{FileUtils.getReadableFileSize(rfilePickerBody.fileSize)}"
             android:textColor="@color/color777777"
             android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/rfile_picker_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/rfile_picker_file_time"
+            android:layout_marginRight="20dp"
+            android:contentDescription="@string/rp_select_txt"
+            android:src="@drawable/lib_rpicker_single_choice_selector"
+            />
 
         <!--<View-->
         <!--android:id="@+id/rfile_picker_line"-->
