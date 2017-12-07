@@ -19,6 +19,7 @@ public class RPickerActivity extends AppCompatActivity implements RFilePickerIte
     ActivityRpickerBinding binding;
 
     private TablayoutFragmentPagerAdapter pagerAdapter;
+    private List<FileEntity> mSelectFiles;
 
 
     @Override
@@ -40,18 +41,40 @@ public class RPickerActivity extends AppCompatActivity implements RFilePickerIte
 
     /**
      * 选中文件回调
+     *
      * @param fileEntities
      */
     @Override
     public void onFileItemSelectClick(List<FileEntity> fileEntities) {
         Log.d("main activity", "------------------ = >onFileItemSelectClick:  size:" + fileEntities.size());
-        long count = 0l;
-        if (fileEntities != null && fileEntities.size() > 0) {
-            for (FileEntity item : fileEntities) {
-                count = count + item.getFileSize();
+        mSelectFiles = fileEntities;
+        refershView();
+    }
+
+
+    private void refershView() {
+        int count = 0;
+        long size = 0;
+        if (mSelectFiles != null && mSelectFiles.size() > 0) {
+            for (int i = 0; i < mSelectFiles.size(); i++) {
+                size = size + mSelectFiles.get(i).getFileSize();
+                count++;
             }
-            binding.rpChooseSize.setText(getString(R.string.rp_select_txt, FileUtils.getReadableFileSize(count)));
-            binding.rpTvSend.setText(getString(R.string.rp_ok_txt, fileEntities.size()));
         }
+        binding.rpChooseSize.setText(getString(R.string.rp_select_txt, FileUtils.getReadableFileSize(size)));
+        if (count > 0) {
+            binding.rpTvSend.setSelected(true);
+            binding.rpTvSend.setTextColor(getResources().getColor(R.color.colorFFFFFF));
+        } else {
+            binding.rpTvSend.setSelected(false);
+            binding.rpTvSend.setTextColor(getResources().getColor(R.color.colorC9C9C9));
+        }
+        if (true) {//多选
+            binding.rpTvSend.setText("发送(" + count + ")");
+        } else {
+            //mBinding.tvSend.setText("发送");
+        }
+
+
     }
 }
