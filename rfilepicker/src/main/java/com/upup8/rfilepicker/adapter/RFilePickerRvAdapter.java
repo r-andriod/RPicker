@@ -45,7 +45,6 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
     private OnScrollListener mOnScrollListener;
 
 
-    @Deprecated
     private RFilePickerItemClickListener clickListener;
 
 
@@ -57,7 +56,7 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.clickListener = clickListener;
     }
 
-    public RFilePickerRvAdapter(Context mContext, SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileArr) {
+    public RFilePickerRvAdapter(Context mContext, SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileArr, RFilePickerItemClickListener clickListener) {
         mAllfileList = new ArrayList<>();
         for (int i = 0; i < fileArr.size(); i++) {
             mAllfileList.add(fileArr.valueAt(i));
@@ -66,6 +65,7 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.mSelectFileList = new ArrayList<>();
         this.mContext = mContext;
         this.inflater = LayoutInflater.from(mContext);
+        this.clickListener = clickListener;
     }
 
     @Override
@@ -182,6 +182,7 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
                 @Override
                 public void onClick(View view) {
                     final int position = getLayoutPosition();
+
                     FileEntity tmp = mAllfileList.get(mAllfileList.indexOf(mFileEntityList.get(position)));
                     boolean exist = mSelectFileList.contains(tmp);
                     Log.d("body", "---------- >onClick: exist:" + exist + " string:\n" + tmp.toString() + " \n select size:" + mSelectFileList.size());
@@ -203,6 +204,8 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
 //                        if (mFileEntityList.get(pos).getFileId() != 0) { //防止 误删除下一个 group
 //                        }
                     }
+                    // 回调选中 list
+                    clickListener.onFileItemSelectClick(mSelectFileList);
                 }
             });
         }

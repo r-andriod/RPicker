@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">RFilePicker</string>
     <string name="rp_select_default_txt">已选0B</string>
-    <string name="rp_select_txt">已选%1$sB</string>
+    <string name="rp_select_txt">已选%1$s</string>
     <string name="rp_ok_default_txt">确定(0)</string>
-    <string name="rp_ok_txt">确定(%1$s)</string>
+    <string name="rp_ok_txt">确定(%1$d)</string>
     <string name="rp_file_header">%1$s (%2$d)</string>
 
     <!-- TODO: Remove or change this placeholder text -->

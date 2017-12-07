@@ -15,11 +15,11 @@ public class TablayoutFragmentPagerAdapter extends FragmentPagerAdapter {
 
     //final int PAGE_COUNT = 4;
     private String tabTitles[] = new String[]{"图片", "视频", "语音", "文档"};
-    private Context context;
+    private Context mContext;
 
-    public TablayoutFragmentPagerAdapter(FragmentManager fm, Context context) {
+    public TablayoutFragmentPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
-        this.context = context;
+        this.mContext = context;
     }
 
     @Override

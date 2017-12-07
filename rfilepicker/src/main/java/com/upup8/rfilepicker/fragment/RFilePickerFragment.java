@@ -1,19 +1,20 @@
 package com.upup8.rfilepicker.fragment;
 
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.upup8.rfilepicker.R;
+import com.upup8.rfilepicker.adapter.RFilePickerItemClickListener;
 import com.upup8.rfilepicker.adapter.RFilePickerRvAdapter;
 import com.upup8.rfilepicker.data.RFilePickerConst;
 import com.upup8.rfilepicker.data.cursor.MediaDataHelper;
@@ -35,9 +36,11 @@ public class RFilePickerFragment extends Fragment {
     public static final String ARG_FILE_TYPE = "arg_file_type";
     private int mFileType;
     private RpickerFragmentDocumentBinding binding;
-    private List<FileEntity> fileEntityList;
+    //private List<FileEntity> mFileEntityList;
     private SparseArray<FileEntity> groupArr = new SparseArray<>();
     private SparseArray<FileEntity> fileArr = new SparseArray<>();
+
+    private RFilePickerItemClickListener clickListener;
 
     public static RFilePickerFragment newInstance(int type) {
         Bundle args = new Bundle();
@@ -47,9 +50,7 @@ public class RFilePickerFragment extends Fragment {
         return pageFragment;
     }
 
-
     public RFilePickerFragment() {
-        // Required empty public constructor
     }
 
 
@@ -73,6 +74,22 @@ public class RFilePickerFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initData();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof RFilePickerItemClickListener) {
+            clickListener = (RFilePickerItemClickListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement RFilePickerItemClickListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        clickListener = null;
     }
 
     private void initData() {
@@ -152,7 +169,14 @@ public class RFilePickerFragment extends Fragment {
 //                        return false;
 //                    }
 //                }));
-        RFilePickerRvAdapter adapter = new RFilePickerRvAdapter(getContext(), dirArr, fileSparseArr);
+        RFilePickerRvAdapter adapter = new RFilePickerRvAdapter(getContext(), dirArr, fileSparseArr, new RFilePickerItemClickListener() {
+            @Override
+            public void onFileItemSelectClick(List<FileEntity> fileEntities) {
+                //mFileEntityList = fileEntities;
+                if (null != clickListener) clickListener.onFileItemSelectClick(fileEntities);
+            }
+        });
+
         binding.rpRcPhoto.setAdapter(adapter);
         /**
          * 展开与收起
