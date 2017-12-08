@@ -3,23 +3,32 @@ package com.upup8.rfilepicker;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.upup8.rfilepicker.adapter.RFilePickerItemClickListener;
-import com.upup8.rfilepicker.adapter.TablayoutFragmentPagerAdapter;
+import com.upup8.rfilepicker.adapter.TabLayoutFragmentPagerAdapter;
 import com.upup8.rfilepicker.databinding.ActivityRpickerBinding;
+import com.upup8.rfilepicker.fragment.RFilePickerFragment;
 import com.upup8.rfilepicker.model.FileEntity;
 import com.upup8.rfilepicker.utils.FileUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.upup8.rfilepicker.data.RFilePickerConst.MEDIA_TYPE_AUDIO;
+import static com.upup8.rfilepicker.data.RFilePickerConst.MEDIA_TYPE_DOCUMENT;
+import static com.upup8.rfilepicker.data.RFilePickerConst.MEDIA_TYPE_IMAGE;
+import static com.upup8.rfilepicker.data.RFilePickerConst.MEDIA_TYPE_VIDEO;
 
 public class RPickerActivity extends AppCompatActivity implements RFilePickerItemClickListener {
 
     ActivityRpickerBinding binding;
 
-    private TablayoutFragmentPagerAdapter pagerAdapter;
+    private TabLayoutFragmentPagerAdapter pagerAdapter;
     private List<FileEntity> mSelectFiles;
+    private List<Fragment> mFragmentList;
 
 
     @Override
@@ -32,7 +41,18 @@ public class RPickerActivity extends AppCompatActivity implements RFilePickerIte
     }
 
     private void initFragment() {
-        pagerAdapter = new TablayoutFragmentPagerAdapter(this, getSupportFragmentManager());
+        mFragmentList = new ArrayList<>();
+        mFragmentList.add(RFilePickerFragment.newInstance(MEDIA_TYPE_IMAGE));
+        mFragmentList.add(RFilePickerFragment.newInstance(MEDIA_TYPE_VIDEO));
+        mFragmentList.add(RFilePickerFragment.newInstance(MEDIA_TYPE_AUDIO));
+        mFragmentList.add(RFilePickerFragment.newInstance(MEDIA_TYPE_DOCUMENT));
+        List<String> titleList = new ArrayList<>();
+        titleList.add("图片");
+        titleList.add("视频");
+        titleList.add("语音");
+        titleList.add("文件");
+        pagerAdapter = new TabLayoutFragmentPagerAdapter(this, getSupportFragmentManager(), mFragmentList, titleList);
+
         binding.rpVpChooseFile.setAdapter(pagerAdapter);
         binding.tabLayout.setupWithViewPager(binding.rpVpChooseFile);
         binding.tabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -48,11 +68,11 @@ public class RPickerActivity extends AppCompatActivity implements RFilePickerIte
     public void onFileItemSelectClick(List<FileEntity> fileEntities) {
         Log.d("main activity", "------------------ = >onFileItemSelectClick:  size:" + fileEntities.size());
         mSelectFiles = fileEntities;
-        refershView();
+        refreshView();
     }
 
 
-    private void refershView() {
+    private void refreshView() {
         int count = 0;
         long size = 0;
         if (mSelectFiles != null && mSelectFiles.size() > 0) {
