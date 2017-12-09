@@ -32,6 +32,15 @@ import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
  */
 public class RFilePickerFragment extends Fragment {
 
+    /**
+     * 控件是否初始化完成
+     */
+    private boolean isViewCreated;
+    /**
+     * 数据是否已加载完毕
+     */
+    private boolean isLoadDataCompleted;
+
 
     public static final String ARG_FILE_TYPE = "arg_file_type";
     private int mFileType;
@@ -65,15 +74,33 @@ public class RFilePickerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.rpicker_fragment_document, container, false);
+        isViewCreated = true;
         return binding.getRoot();
         // Inflate the layout for this fragment
         //return inflater.inflate(R.layout.rpicker_fragment_document, container, false);
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && isViewCreated && !isLoadDataCompleted) {
+            isLoadDataCompleted = true;
+            loadData();
+        }
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initData();
+        if (getUserVisibleHint()) {
+            isLoadDataCompleted = true;
+            loadData();
+        }
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -92,7 +119,7 @@ public class RFilePickerFragment extends Fragment {
         clickListener = null;
     }
 
-    private void initData() {
+    private void loadData() {
         Bundle mediaStoreArgs = new Bundle();
         mediaStoreArgs.putInt(RFilePickerConst.EXTRA_FILE_TYPE, mFileType);
         MediaDataHelper.getFiles(getActivity(),
