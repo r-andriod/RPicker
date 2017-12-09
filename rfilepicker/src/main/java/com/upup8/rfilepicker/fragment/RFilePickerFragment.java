@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,8 +21,6 @@ import com.upup8.rfilepicker.data.cursor.MediaDataHelper;
 import com.upup8.rfilepicker.data.cursor.callback.IFileResultCallback;
 import com.upup8.rfilepicker.databinding.RpickerFragmentDocumentBinding;
 import com.upup8.rfilepicker.model.FileEntity;
-
-import java.util.List;
 
 import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 
@@ -141,25 +138,16 @@ public class RFilePickerFragment extends Fragment {
     private void initList(SparseArray<FileEntity> dirArr, SparseArray<FileEntity> fileSparseArr) {
         binding.rpRcPhoto.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rpRcPhoto.addItemDecoration(new DividerItemDecoration(getContext(), VERTICAL));
-//        binding.rpRcPhoto.addItemDecoration(new RFilePickerItemDecorator(getContext(),
-//                RFilePickerItemDecorator.VERTICAL_LIST,
-//                new RFilePickerItemDecorator.RFIlePickerDecorationCallback() {
-//                    @Override
-//                    public boolean getIsGroupHeadByPos(int position) {
-//                        //Log.d("getIsGroupHeadByPos", "getIsGroupHeadByPos: " + files.get(position).toString());
-//                        if (fileEntityList != null && fileEntityList.size() > 0) {
-//                            if ((fileEntityList.get(position).getFileId() == 0)) {
-//                                return true;
-//                            }
-//                        }
-//                        return false;
-//                    }
-//                }));
+
         mAdapter = new RFilePickerRvAdapter(getContext(), dirArr, fileSparseArr, new RFilePickerItemClickListener() {
             @Override
-            public void onFileItemSelectClick(List<FileEntity> fileEntities) {
-                //mFileEntityList = fileEntities;
-                if (null != clickListener) clickListener.onFileItemSelectClick(fileEntities);
+            public void onFileItemSelectClick(FileEntity fileEntity) {
+                if (null != clickListener) clickListener.onFileItemSelectClick(fileEntity);
+            }
+
+            @Override
+            public void onFileItemUnSelectClick(FileEntity fileEntity) {
+                if (null != clickListener) clickListener.onFileItemUnSelectClick(fileEntity);
             }
         });
 
@@ -175,12 +163,6 @@ public class RFilePickerFragment extends Fragment {
                 binding.rpRcPhoto.scrollToPosition(pos);
             }
         });
-    }
-
-    public void isMaxSelectFile() {
-        Log.d("fragment", "isMaxSelectFile:-------------  ");
-        isMaxFile = true;
-        mAdapter.isMaxFile(isMaxFile);
     }
 
 

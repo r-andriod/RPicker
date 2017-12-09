@@ -3,7 +3,6 @@ package com.upup8.rfilepicker.adapter;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +11,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.upup8.rfilepicker.R;
+import com.upup8.rfilepicker.RPickerActivity;
 import com.upup8.rfilepicker.databinding.RpfilepickerFileBodyItemBinding;
 import com.upup8.rfilepicker.databinding.RpfilepickerFileHeadItemBinding;
 import com.upup8.rfilepicker.model.FileEntity;
@@ -46,8 +46,6 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 
     private RFilePickerItemClickListener clickListener;
-
-    private boolean isMaxFile = false;
 
 
     @Deprecated
@@ -179,39 +177,29 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
         public FileBodyViewHolder(RpfilepickerFileBodyItemBinding itemBinding) {
             super(itemBinding.getRoot());
             this.binding = itemBinding;
-
-            if (!isMaxFile) {
-                binding.getRoot().setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        final int position = getLayoutPosition();
-
-                        FileEntity tmp = mAllfileList.get(mAllfileList.indexOf(mFileEntityList.get(position)));
-                        boolean exist = mSelectFileList.contains(tmp);
-                        Log.d("body", "---------- >onClick: exist:" + exist + " string:\n" + tmp.toString() + " \n select size:" + mSelectFileList.size());
-                        if (exist) {
-                            mSelectFileList.remove(tmp);
-                            binding.rfilePickerSelect.setSelected(false);
-                            tmp.setSelect(false);
-                            //Long dirId = mFileEntityList.get(position).getDirId();  // DIR id
-                            // child pos
-                            //int pos = mFileEntityList.size() > position + 1 ? position + 1 : mFileEntityList.size();
-
-                        } else {
-                            mSelectFileList.add(tmp);
-                            //mFileEntityList.get(position).setSelect(true);
-                            binding.rfilePickerSelect.setSelected(true);
-                            tmp.setSelect(true);
-                            //Log.d("---item", "list size:" + fileEntityList.size() + "pos: " + position + " file size:" + fileEntityList.get(position).getDirFileCount() + "\n" + fileEntityList.get(position).toString());
-//                        int pos = mFileEntityList.size() - 1 > position + 1 ? position + 1 : mFileEntityList.size() - 1;
-//                        if (mFileEntityList.get(pos).getFileId() != 0) { //防止 误删除下一个 group
-//                        }
-                        }
+            binding.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final int position = getLayoutPosition();
+                    FileEntity tmp = mAllfileList.get(mAllfileList.indexOf(mFileEntityList.get(position)));
+                    boolean exist = mSelectFileList.contains(tmp);
+                    //Log.d("body", "---------- >onClick: exist:" + exist + " string:\n" + tmp.toString() + " \n select size:" + mSelectFileList.size());
+                    if (exist) {
+                        mSelectFileList.remove(tmp);
+                        binding.rfilePickerSelect.setSelected(false);
+                        tmp.setSelect(false);
+                        clickListener.onFileItemUnSelectClick(tmp);
+                    } else if (!isFileMax()) {
+                        mSelectFileList.add(tmp);
+                        //mFileEntityList.get(position).setSelect(true);
+                        binding.rfilePickerSelect.setSelected(true);
+                        tmp.setSelect(true);
                         // 回调选中 list
-                        clickListener.onFileItemSelectClick(mSelectFileList);
+                        clickListener.onFileItemSelectClick(tmp);
                     }
-                });
-            }
+                }
+            });
+
         }
 
         public RpfilepickerFileBodyItemBinding getBinding() {
@@ -307,8 +295,13 @@ public class RFilePickerRvAdapter extends RecyclerView.Adapter<RecyclerView.View
         notifyItemRangeRemoved(position, itemCount);
     }
 
-    public void isMaxFile(boolean isMaxFile) {
-        Log.d("adapter", "isMaxFile: " + isMaxFile);
-        this.isMaxFile = isMaxFile;
+    private boolean isFileMax() {
+        if (mContext != null) {
+            if (mContext instanceof RPickerActivity) {
+                RPickerActivity activity = (RPickerActivity) mContext;
+                if (null != activity) return activity.isMaxFile();
+            }
+        }
+        return false;
     }
 }

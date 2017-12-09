@@ -36,6 +36,7 @@ public class RPickerActivity extends AppCompatActivity implements RFilePickerIte
     private TabLayoutFragmentPagerAdapter pagerAdapter;
     private List<FileEntity> mSelectFiles = new ArrayList<>();
     private List<Fragment> mFragmentList;
+    private boolean isMaxFile = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,36 +59,16 @@ public class RPickerActivity extends AppCompatActivity implements RFilePickerIte
         titleList.add("语音");
         titleList.add("文件");
         pagerAdapter = new TabLayoutFragmentPagerAdapter(this, getSupportFragmentManager(), mFragmentList, titleList);
-        binding.rpVpChooseFile.setOffscreenPageLimit(3);
+        binding.rpVpChooseFile.setOffscreenPageLimit(4);
         binding.rpVpChooseFile.setAdapter(pagerAdapter);
+
+
         binding.tabLayout.setupWithViewPager(binding.rpVpChooseFile);
         binding.tabLayout.setTabMode(TabLayout.MODE_FIXED);
 
+
         //反射修改宽度
         setUpIndicatorWidth(binding.tabLayout);
-    }
-
-
-    /**
-     * 选中文件回调
-     *
-     * @param fileEntities
-     */
-    @Override
-    public void onFileItemSelectClick(List<FileEntity> fileEntities) {
-        //Log.d("main activity", "------------------ = >onFileItemSelectClick:  size:" + fileEntities.size());
-        for (int i = 0; i < fileEntities.size(); i++) {
-            if (!mSelectFiles.contains(fileEntities.get(i))) {
-                mSelectFiles.add(fileEntities.get(i));
-            }
-        }
-        if (mSelectFiles.size() < MAX_SELECT_FILE + 1) {
-            refreshView();
-        } else {
-            RFilePickerFragment filePickerFragment = (RFilePickerFragment) pagerAdapter.currentFragment;
-            if (filePickerFragment != null) filePickerFragment.isMaxSelectFile();
-            Toast.makeText(this, "文件不能超过 " + MAX_SELECT_FILE + "个", Toast.LENGTH_SHORT).show();
-        }
     }
 
 
@@ -149,4 +130,45 @@ public class RPickerActivity extends AppCompatActivity implements RFilePickerIte
         }
     }
 
+    public boolean isMaxFile() {
+        return isMaxFile;
+    }
+
+    /**
+     * 选中文件回调
+     *
+     * @param fileEntity
+     */
+    @Override
+    public void onFileItemSelectClick(FileEntity fileEntity) {
+        if (!mSelectFiles.contains(fileEntity)) {
+            mSelectFiles.add(fileEntity);
+        }
+        showMaxFileListener();
+    }
+
+    /**
+     * 取消选中回调
+     *
+     * @param fileEntity
+     */
+    @Override
+    public void onFileItemUnSelectClick(FileEntity fileEntity) {
+        if (mSelectFiles.contains(fileEntity)) {
+            mSelectFiles.remove(fileEntity);
+        }
+        showMaxFileListener();
+    }
+
+    private void showMaxFileListener() {
+        if (mSelectFiles.size() < MAX_SELECT_FILE + 1) {
+            refreshView();
+        }
+        if (mSelectFiles.size() < MAX_SELECT_FILE) {
+            isMaxFile = false;
+        } else {
+            isMaxFile = true;
+            Toast.makeText(this, "文件不能超过 " + MAX_SELECT_FILE + "个", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

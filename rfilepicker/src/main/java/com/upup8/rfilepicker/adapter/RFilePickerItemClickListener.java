@@ -2,8 +2,6 @@ package com.upup8.rfilepicker.adapter;
 
 import com.upup8.rfilepicker.model.FileEntity;
 
-import java.util.List;
-
 /**
  * RFilePickerItemClickListener
  * Created by renwoxing on 2017/12/2.
@@ -11,7 +9,9 @@ import java.util.List;
 public interface RFilePickerItemClickListener {
 
     //void onItemClick(Long groupId, int pos);
-    void onFileItemSelectClick(List<FileEntity> fileEntities);
+    void onFileItemSelectClick(FileEntity fileEntity);
+
+    void onFileItemUnSelectClick(FileEntity fileEntity);
 
     /**
      * 展开子Item
