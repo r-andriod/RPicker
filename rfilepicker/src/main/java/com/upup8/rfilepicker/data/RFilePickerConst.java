@@ -17,5 +17,7 @@ public interface RFilePickerConst {
     int FILE_VH_HEADE = 1;
     int FILE_VH_BODY = 2;
 
+    int MAX_SELECT_FILE = 9;
+
 
 }

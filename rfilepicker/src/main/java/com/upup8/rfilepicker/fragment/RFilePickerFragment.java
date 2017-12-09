@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +41,7 @@ public class RFilePickerFragment extends Fragment {
      * 数据是否已加载完毕
      */
     private boolean isLoadDataCompleted;
+    private boolean isMaxFile = false;
 
 
     public static final String ARG_FILE_TYPE = "arg_file_type";
@@ -50,6 +52,8 @@ public class RFilePickerFragment extends Fragment {
     private SparseArray<FileEntity> fileArr = new SparseArray<>();
 
     private RFilePickerItemClickListener clickListener;
+
+    RFilePickerRvAdapter mAdapter;
 
     public static RFilePickerFragment newInstance(int type) {
         Bundle args = new Bundle();
@@ -151,7 +155,7 @@ public class RFilePickerFragment extends Fragment {
 //                        return false;
 //                    }
 //                }));
-        RFilePickerRvAdapter adapter = new RFilePickerRvAdapter(getContext(), dirArr, fileSparseArr, new RFilePickerItemClickListener() {
+        mAdapter = new RFilePickerRvAdapter(getContext(), dirArr, fileSparseArr, new RFilePickerItemClickListener() {
             @Override
             public void onFileItemSelectClick(List<FileEntity> fileEntities) {
                 //mFileEntityList = fileEntities;
@@ -159,17 +163,24 @@ public class RFilePickerFragment extends Fragment {
             }
         });
 
-        binding.rpRcPhoto.setAdapter(adapter);
+
+        binding.rpRcPhoto.setAdapter(mAdapter);
         /**
          * 展开与收起
          * 滚动事件
          */
-        adapter.setOnScrollListener(new RFilePickerRvAdapter.OnScrollListener() {
+        mAdapter.setOnScrollListener(new RFilePickerRvAdapter.OnScrollListener() {
             @Override
             public void scrollTo(int pos) {
                 binding.rpRcPhoto.scrollToPosition(pos);
             }
         });
+    }
+
+    public void isMaxSelectFile() {
+        Log.d("fragment", "isMaxSelectFile:-------------  ");
+        isMaxFile = true;
+        mAdapter.isMaxFile(isMaxFile);
     }
 
 

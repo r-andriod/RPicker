@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.upup8.rfilepicker.adapter.RFilePickerItemClickListener;
 import com.upup8.rfilepicker.adapter.TabLayoutFragmentPagerAdapter;
@@ -22,6 +23,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.upup8.rfilepicker.data.RFilePickerConst.MAX_SELECT_FILE;
 import static com.upup8.rfilepicker.data.RFilePickerConst.MEDIA_TYPE_AUDIO;
 import static com.upup8.rfilepicker.data.RFilePickerConst.MEDIA_TYPE_DOCUMENT;
 import static com.upup8.rfilepicker.data.RFilePickerConst.MEDIA_TYPE_IMAGE;
@@ -32,9 +34,8 @@ public class RPickerActivity extends AppCompatActivity implements RFilePickerIte
     ActivityRpickerBinding binding;
 
     private TabLayoutFragmentPagerAdapter pagerAdapter;
-    private List<FileEntity> mSelectFiles;
+    private List<FileEntity> mSelectFiles = new ArrayList<>();
     private List<Fragment> mFragmentList;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,23 +75,34 @@ public class RPickerActivity extends AppCompatActivity implements RFilePickerIte
      */
     @Override
     public void onFileItemSelectClick(List<FileEntity> fileEntities) {
-        Log.d("main activity", "------------------ = >onFileItemSelectClick:  size:" + fileEntities.size());
-        mSelectFiles = fileEntities;
-        refreshView();
+        //Log.d("main activity", "------------------ = >onFileItemSelectClick:  size:" + fileEntities.size());
+        for (int i = 0; i < fileEntities.size(); i++) {
+            if (!mSelectFiles.contains(fileEntities.get(i))) {
+                mSelectFiles.add(fileEntities.get(i));
+            }
+        }
+        if (mSelectFiles.size() < MAX_SELECT_FILE + 1) {
+            refreshView();
+        } else {
+            RFilePickerFragment filePickerFragment = (RFilePickerFragment) pagerAdapter.currentFragment;
+            if (filePickerFragment != null) filePickerFragment.isMaxSelectFile();
+            Toast.makeText(this, "文件不能超过 " + MAX_SELECT_FILE + "个", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
     private void refreshView() {
-        int count = 0;
-        long size = 0;
+        int mCount = 0;
+        long mSize = 0;
         if (mSelectFiles != null && mSelectFiles.size() > 0) {
+            Log.d("--", "refreshView: " + mSelectFiles.size());
             for (int i = 0; i < mSelectFiles.size(); i++) {
-                size = size + mSelectFiles.get(i).getFileSize();
-                count++;
+                mSize = mSize + mSelectFiles.get(i).getFileSize();
+                mCount = mCount + 1;
             }
         }
-        binding.rpChooseSize.setText(getString(R.string.rp_select_txt, FileUtils.getReadableFileSize(size)));
-        if (count > 0) {
+        binding.rpChooseSize.setText(getString(R.string.rp_select_txt, FileUtils.getReadableFileSize(mSize)));
+        if (mCount > 0) {
             binding.rpTvSend.setSelected(true);
             binding.rpTvSend.setTextColor(getResources().getColor(R.color.colorFFFFFF));
         } else {
@@ -98,7 +110,7 @@ public class RPickerActivity extends AppCompatActivity implements RFilePickerIte
             binding.rpTvSend.setTextColor(getResources().getColor(R.color.colorC9C9C9));
         }
         if (true) {//多选
-            binding.rpTvSend.setText("发送(" + count + ")");
+            binding.rpTvSend.setText("发送(" + mCount + ")");
         } else {
             //mBinding.tvSend.setText("发送");
         }
@@ -136,4 +148,5 @@ public class RPickerActivity extends AppCompatActivity implements RFilePickerIte
             e.printStackTrace();
         }
     }
+
 }
