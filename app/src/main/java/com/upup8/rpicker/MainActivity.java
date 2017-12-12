@@ -12,9 +12,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.upup8.rfilepicker.RPickerActivity;
+import com.upup8.rfilepicker.data.RFilePickerConst;
 import com.upup8.rfilepicker.utils.PermissionUtils;
 import com.upup8.rpicker.databinding.ActivityMainBinding;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
@@ -87,14 +89,12 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (data != null) {
-            //ArrayList<FileInfo> list = data.getParcelableArrayListExtra(ChooseFileActivity.FILELISTDATA);
+            ArrayList<String> list = data.getStringArrayListExtra(RFilePickerConst.EXTRA_FILE_TYPE);
             StringBuilder str = new StringBuilder();
-//            for (int i = 0; i < list.size(); i++) {
-//                FileInfo fileInfo = list.get(i);
-//                str.append(fileInfo.getFile_path() + "\n");
-//            }
+            for (int i = 0; i < list.size(); i++) {
+                str.append(list.get(i) + "\n");
+            }
             binding.tvShow.setText(str.toString());
-
 
         }
     }

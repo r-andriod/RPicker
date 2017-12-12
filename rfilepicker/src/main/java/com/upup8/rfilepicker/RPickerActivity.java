@@ -1,5 +1,6 @@
 package com.upup8.rfilepicker;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import com.upup8.rfilepicker.adapter.RFilePickerItemClickListener;
 import com.upup8.rfilepicker.adapter.TabLayoutFragmentPagerAdapter;
+import com.upup8.rfilepicker.data.RFilePickerConst;
 import com.upup8.rfilepicker.databinding.ActivityRpickerBinding;
 import com.upup8.rfilepicker.fragment.RFilePickerFragment;
 import com.upup8.rfilepicker.model.FileEntity;
@@ -45,6 +47,17 @@ public class RPickerActivity extends AppCompatActivity implements RFilePickerIte
         binding = DataBindingUtil.setContentView(this, R.layout.activity_rpicker);
 
         initFragment();
+
+        binding.rpTvSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<String> retPaths = new ArrayList<>();
+                for (FileEntity fe : mSelectFiles) {
+                    retPaths.add(fe.getFilePath());
+                }
+                returnData(retPaths);
+            }
+        });
     }
 
     private void initFragment() {
@@ -170,5 +183,13 @@ public class RPickerActivity extends AppCompatActivity implements RFilePickerIte
             isMaxFile = true;
             Toast.makeText(this, "文件不能超过 " + MAX_SELECT_FILE + "个", Toast.LENGTH_SHORT).show();
         }
+    }
+
+
+    private void returnData(ArrayList<String> paths) {
+        Intent intent = new Intent();
+        intent.putStringArrayListExtra(RFilePickerConst.EXTRA_FILE_TYPE, paths);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 }
