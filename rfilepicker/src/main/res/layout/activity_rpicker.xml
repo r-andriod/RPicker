@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="#ffffff"
+            app:tabIndicatorColor="@color/color_blue_24A9FC"
+            app:tabMode="fixed"
+            app:tabGravity="fill"
+            app:tabSelectedTextColor="@color/color_blue_24A9FC"
+            app:tabTextAppearance="@style/TabLayoutTextStyle"
+            app:tabTextColor="#333333" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/colorebebeb" />
+
+        <android.support.v4.view.ViewPager
+            android:layout_marginTop="10dp"
+            android:id="@+id/rp_vp_choose_file"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/colorebebeb" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp">
+
+            <TextView
+                android:id="@+id/rp_choose_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="14dp"
+                android:layout_marginStart="14dp"
+                android:text="@string/rp_select_default_txt"
+                android:textColor="@color/color8A8A8A"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/rp_tv_send"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="14dp"
+                android:layout_marginRight="14dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/lib_rpicker_choose_file_send_btn_selector"
+                android:gravity="center"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/rp_ok_default_txt"
+                android:textColor="@color/colorC9C9C9"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
+    </LinearLayout>
+</layout>

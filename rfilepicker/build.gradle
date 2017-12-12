@@ -31,4 +31,7 @@ dependencies {
     implementation deps.support.app_compat
     implementation deps.support.v4
     implementation deps.support.recyclerview
+    implementation deps.support.design
+    implementation deps.glide
+    implementation 'com.android.support:support-v4:26.0.0-beta1'
 }

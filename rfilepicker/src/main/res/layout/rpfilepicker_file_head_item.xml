@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <variable
+            name="rfilePickerHeader"
+            type="com.upup8.rfilepicker.model.FileEntity" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/colorFFFFFF"
+        android:orientation="horizontal"
+        android:paddingEnd="15dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingStart="15dp">
+
+        <TextView
+            android:id="@+id/rfile_picker_header_tv_title"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="@{@string/rp_file_header(rfilePickerHeader.fileName,rfilePickerHeader.dirFileCount)}"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/rfile_picker_header_tv_up_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/lib_rpicker_expand_up_down_selector"
+            android:contentDescription="TODO"
+            android:tooltipText="@{rfilePickerHeader.fileName}" />
+
+    </LinearLayout>
+</layout>
